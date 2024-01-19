@@ -2,9 +2,7 @@ package com.hobbyzhub.javabackend.securitymodule;
 
 import com.hobbyzhub.javabackend.securitymodule.advice.MessagingException;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
-import com.hobbyzhub.javabackend.securitymodule.payload.request.CreateAccountRequest;
-import com.hobbyzhub.javabackend.securitymodule.payload.request.GetAccountRequest;
-import com.hobbyzhub.javabackend.securitymodule.payload.request.SendMailRequest;
+import com.hobbyzhub.javabackend.securitymodule.payload.request.OpUserAccountRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.VerifyEmailRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.response.UserDetailsResponse;
 import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
@@ -38,29 +36,9 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
     @Autowired
     private AppUserServiceDef appUserService;
 
-
-
-    @Override
-    @PostMapping(value = "/register/{email}/{userId}")
-    public ResponseEntity<?> createUserAccount(@PathVariable String email, @PathVariable String userId) {
-        CreateAccountRequest request = new CreateAccountRequest(email, userId);
-
-        AppUser appUser = super.mapPayloadToEntity(request);
-        appUserService.registerNewAccount(appUser);
-
-        return ResponseEntity.ok().body(new GenericResponse<>(
-                apiVersion,
-                organizationName,
-                "Successfully created user account",
-                true,
-                HttpStatus.OK.value(),
-                null
-        ));
-    }
-
     @Override
     @PostMapping(value = "/email-otp")
-    public ResponseEntity<?> sendOtp(@RequestBody SendMailRequest request, @RequestParam String intent) {
+    public ResponseEntity<?> sendOtp(@RequestBody OpUserAccountRequest request, @RequestParam String intent) {
         try {
             appUserService.sendVerificationEmail(request.getEmail(), intent);
 
@@ -97,7 +75,7 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
 
     @Override
     @PostMapping(value = "/get-details", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccountById(@RequestBody GetAccountRequest request) {
+    public ResponseEntity<?> getAccountById(@RequestBody OpUserAccountRequest request) {
         try {
             AppUser user = appUserService.findUserById(request.getUserId());
             UserDetailsResponse responsePayload = (UserDetailsResponse) super.mapEntityToPayload(user);

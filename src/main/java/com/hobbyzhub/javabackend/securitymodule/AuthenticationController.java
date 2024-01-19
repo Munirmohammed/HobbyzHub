@@ -43,7 +43,7 @@ public class AuthenticationController extends EntityModelMapper {
     private JwtUtils jwtUtils;
 
     @PostMapping(value = "/register",  consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody OpUserAccountRequest request) {
         try {
             AppUser newAppUser = super.mapPayloadToEntity(request);
             AppUser credentials =  appUserService.createUserAccount(newAppUser);
@@ -65,7 +65,7 @@ public class AuthenticationController extends EntityModelMapper {
 
     }
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> loginUser(@RequestBody OpUserAccountRequest request) {
         Authentication authentication
             = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -90,14 +90,8 @@ public class AuthenticationController extends EntityModelMapper {
         }
     }
 
-    @PostMapping(value = "/unnew-account/{userId}")
-    public ResponseEntity<?> markAccountAsNotNew(@PathVariable String userId) {
-        appUserService.markAccountNotNew(userId);
-        return ResponseEntity.ok().body(null);
-    }
-
     @PutMapping(value = "/activate-account", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> activateAccount(@RequestBody ActivateAccountRequest request) {
+    public ResponseEntity<?> activateAccount(@RequestBody OpUserAccountRequest request) {
         appUserService.activateAccount(request.getEmail());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
@@ -126,7 +120,7 @@ public class AuthenticationController extends EntityModelMapper {
     }
 
     @DeleteMapping(value = "/delete-account", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountRequest request) {
+    public ResponseEntity<?> deleteAccount(@RequestBody OpUserAccountRequest request) {
         try {
             appUserService.deleteAccountByEmail(request.getEmail());
 
