@@ -64,10 +64,10 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "X-CSRF-TOKEN", "Content-Type", "User-Agent", "Accept"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "User-Agent", "Accept"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -81,7 +81,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(authorizationExceptionHandler))
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requestMatcherRegistry -> {
-                    requestMatcherRegistry.requestMatchers("/api/v1/auth/**").permitAll();
+                    requestMatcherRegistry.requestMatchers("/api/**/auth/**").permitAll();
                     requestMatcherRegistry.anyRequest().authenticated();
                 })
                 .authenticationProvider(daoAuthenticationProvider())
