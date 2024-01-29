@@ -81,7 +81,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(authorizationExceptionHandler))
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requestMatcherRegistry -> {
-                    requestMatcherRegistry.requestMatchers("/api/**/auth/**").permitAll();
+                    requestMatcherRegistry.requestMatchers("/api/v1/auth/**").permitAll();
                     requestMatcherRegistry.anyRequest().authenticated();
                 })
                 .authenticationProvider(daoAuthenticationProvider())
