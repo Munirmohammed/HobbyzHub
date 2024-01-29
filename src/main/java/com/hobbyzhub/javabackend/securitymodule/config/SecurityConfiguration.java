@@ -84,8 +84,7 @@ public class SecurityConfiguration {
                     requestMatcherRegistry.requestMatchers(
                 "/api/v1/auth/**",
                         "/api/v1/accounts/email-otp/**",
-                        "/api/v1/accounts/verify-otp",
-                        "").permitAll();
+                        "/api/v1/accounts/verify-otp").permitAll();
                     requestMatcherRegistry.anyRequest().authenticated();
                 })
                 .authenticationProvider(daoAuthenticationProvider())
