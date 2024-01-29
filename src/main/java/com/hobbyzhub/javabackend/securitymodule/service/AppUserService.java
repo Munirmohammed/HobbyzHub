@@ -207,11 +207,10 @@ public class AppUserService implements AppUserServiceDef {
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setNewAccount(true);
         appUser.setAccountActive(false);
+        appUser.setJoinedDate(LocalDate.now());
 
         // save in database
         appUser = appUserRepository.save(appUser);
-
-        
         return appUser;
     }
 
