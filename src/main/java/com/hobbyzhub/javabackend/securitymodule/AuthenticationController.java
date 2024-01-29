@@ -47,10 +47,10 @@ public class AuthenticationController extends EntityModelMapper {
         try {
             AppUser newAppUser = super.mapPayloadToEntity(request);
             AppUser credentials =  appUserService.createUserAccount(newAppUser);
+            log.info("Successfully created new user account with id: {}", credentials.getUserId());
 
             // generate response body
-            RegisterResponse response = (RegisterResponse) super.mapEntityToPayload(credentials);
-
+            RegisterResponse response = new RegisterResponse(credentials.getEmail(), credentials.getUserId());
             return ResponseEntity.ok().body(new GenericResponse<>(
                 apiVersion,
                 organizationName,
@@ -70,6 +70,7 @@ public class AuthenticationController extends EntityModelMapper {
             = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
+        log.info("Successfully logged in user with id {}", userDetails.getUserId());
         if(authentication.isAuthenticated()) {
             return ResponseEntity.ok().body(new GenericResponse<>(
                 apiVersion,
@@ -93,6 +94,7 @@ public class AuthenticationController extends EntityModelMapper {
     @PutMapping(value = "/activate-account", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> activateAccount(@RequestBody OpUserAccountRequest request) {
         appUserService.activateAccount(request.getEmail());
+        log.info("Successfully activated account for user with email {}", request.getEmail());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
