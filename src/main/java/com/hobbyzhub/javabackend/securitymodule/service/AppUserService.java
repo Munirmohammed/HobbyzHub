@@ -14,6 +14,8 @@ import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
@@ -66,8 +68,6 @@ public class AppUserService implements AppUserServiceDef {
                 () -> new EntityNotFoundException("User by id " + userId + " not found")
         );
     }
-
-
 
     @Override
     public void sendVerificationEmail(String email, String intent) throws MessagingException, EntityNotFoundException {
@@ -237,6 +237,12 @@ public class AppUserService implements AppUserServiceDef {
                 () -> new EntityNotFoundException("Account by email " + appUser.getEmail() + " not found"));
         existingCredentials.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUserRepository.save(existingCredentials);
+    }
+
+    @Override
+    public List<AppUser> searchUsersByName(String searchSlug, Integer page, Integer size) {
+        Pageable pageInfo = PageRequest.of(page, size);
+        return appUserRepository.findByFullName(searchSlug, pageInfo).stream().parallel().peek(appUser -> appUser.setPassword(null)).toList();
     }
 
     private String generateId() {

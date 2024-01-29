@@ -3,6 +3,7 @@ package com.hobbyzhub.javabackend.securitymodule;
 import com.hobbyzhub.javabackend.securitymodule.advice.MessagingException;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.OpUserAccountRequest;
+import com.hobbyzhub.javabackend.securitymodule.payload.request.SearchAccountsRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.VerifyEmailRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.response.UserDetailsResponse;
 import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
@@ -149,14 +150,30 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
                 accountsList.parallelStream().map(super::mapEntityToPayload).toList().parallelStream().map(UserDetailsResponse::new).toList();
 
         return ResponseEntity.ok().body(new GenericResponse<>(
-                apiVersion,
-                organizationName,
-                "Successfully updated user details",
-                true,
-                HttpStatus.OK.value(),
-                accountsResponseList
+            apiVersion,
+            organizationName,
+            "Successfully updated user details",
+            true,
+            HttpStatus.OK.value(),
+            accountsResponseList
         ));
     }
+
+    @PostMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchAccounts(@RequestBody SearchAccountsRequest request) {
+        List<AppUser> appUsers = appUserService.searchUsersByName(request.getSearchSlug(), request.getPage(), request.getSize());
+        List<UserDetailsResponse> responseList = appUsers.parallelStream().map(user -> (UserDetailsResponse) super.mapEntityToPayload(user)).toList();
+
+        return ResponseEntity.ok().body(new GenericResponse<>(
+            apiVersion,
+            organizationName,
+            "Successfully retrieved user details details",
+            true,
+            HttpStatus.OK.value(),
+            responseList
+        ));
+    }
+
     @GetMapping("/data/{userId}")
     public ResponseEntity<?> getData(@PathVariable("userId") String userId){
         return new ResponseEntity<>(

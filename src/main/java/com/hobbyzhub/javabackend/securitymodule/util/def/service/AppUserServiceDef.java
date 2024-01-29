@@ -17,4 +17,5 @@ public interface AppUserServiceDef {
     void markAccountNotNew(String userId);
     void activateAccount(String email);
     void resetPassword(AppUser userCredential);
+    List<AppUser> searchUsersByName(String searchSlug, Integer page, Integer size);
 }
