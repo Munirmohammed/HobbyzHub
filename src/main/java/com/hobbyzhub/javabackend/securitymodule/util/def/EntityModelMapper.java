@@ -39,8 +39,10 @@ public abstract class EntityModelMapper {
         if(!Objects.isNull(appUser.getBirthdate())) {
             payload.setBirthdate(appUser.getBirthdate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         }
-        payload.setJoinedDate(appUser.getJoinedDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
+        if(!Objects.isNull(appUser.getJoinedDate())) {
+            payload.setJoinedDate(appUser.getJoinedDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        }
         return payload;
     }
 }
