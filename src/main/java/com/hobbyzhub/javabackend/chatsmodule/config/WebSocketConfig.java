@@ -1,5 +1,6 @@
-package com.hobbyzhub.chatservice.config;
+package com.hobbyzhub.javabackend.chatsmodule.config;
 
+import com.hobbyzhub.javabackend.chatsmodule.listener.WebSockectChannelInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -8,13 +9,11 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.hobbyzhub.chatservice.listener.WebSockectChannelInterceptor;
-
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Autowired
-	WebSockectChannelInterceptor channelInterceptor;
+	private WebSockectChannelInterceptor channelInterceptor;
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -38,6 +37,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(channelInterceptor);
 	}
-	
-	
 }

@@ -2,7 +2,8 @@ package com.hobbyzhub.javabackend.chatsmodule.service;
 
 import java.time.LocalDate;
 
-import com.hobbyzhub.javabackend.chatsmodule.dto.GroupMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;

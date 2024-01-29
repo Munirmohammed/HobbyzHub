@@ -1,7 +1,7 @@
 package com.hobbyzhub.javabackend.chatsmodule.service;
 
-import com.hobbyzhub.javabackend.chatsmodule.dto.GroupMessageDTO;
-import com.hobbyzhub.javabackend.chatsmodule.dto.PrivateMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.PrivateMessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;

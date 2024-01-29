@@ -64,7 +64,8 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+//        configuration.setAllowedOriginPatterns(List.of("**:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173", ""));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "User-Agent", "Accept"));
@@ -84,7 +85,8 @@ public class SecurityConfiguration {
                     requestMatcherRegistry.requestMatchers(
                 "/api/v1/auth/**",
                         "/api/v1/accounts/email-otp/**",
-                        "/api/v1/accounts/verify-otp").permitAll();
+                        "/api/v1/accounts/verify-otp",
+                        "/ws-registry/**").permitAll();
                     requestMatcherRegistry.anyRequest().authenticated();
                 })
                 .authenticationProvider(daoAuthenticationProvider())

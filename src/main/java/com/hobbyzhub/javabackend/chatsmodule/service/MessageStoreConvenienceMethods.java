@@ -1,8 +1,9 @@
 package com.hobbyzhub.javabackend.chatsmodule.service;
 
-import com.hobbyzhub.javabackend.chatsmodule.dto.GroupMessageDTO;
-import com.hobbyzhub.javabackend.chatsmodule.dto.PrivateMessageDTO;
 import com.hobbyzhub.javabackend.chatsmodule.entity.MessageModel;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.PrivateMessageDTO;
 import com.hobbyzhub.javabackend.chatsmodule.repository.MessageModelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

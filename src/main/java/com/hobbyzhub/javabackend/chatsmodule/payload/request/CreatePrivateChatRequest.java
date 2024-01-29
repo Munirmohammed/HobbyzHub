@@ -1,9 +1,8 @@
 package com.hobbyzhub.javabackend.chatsmodule.payload.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data

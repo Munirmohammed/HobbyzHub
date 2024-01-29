@@ -1,4 +1,4 @@
-package com.hobbyzhub.chatservice.listener;
+package com.hobbyzhub.javabackend.chatsmodule.listener;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

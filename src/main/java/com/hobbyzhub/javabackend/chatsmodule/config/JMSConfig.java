@@ -1,4 +1,4 @@
-package com.hobbyzhub.chatservice.config;
+package com.hobbyzhub.javabackend.chatsmodule.config;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
