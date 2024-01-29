@@ -1,4 +1,4 @@
-package com.hobbyzhub.javabackend.securitymodule.service;
+package com.hobbyzhub.javabackend.sharedutils;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -44,4 +44,5 @@ public class StorageService {
         return convertedFile;
     }
 }
+
 

@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.hobbyzhub.javabackend.securitymodule.types.Gender;
 import com.hobbyzhub.javabackend.securitymodule.util.def.service.AppUserServiceDef;
 import com.hobbyzhub.javabackend.sharedexceptions.MessagingException;
+import com.hobbyzhub.javabackend.sharedutils.StorageService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
