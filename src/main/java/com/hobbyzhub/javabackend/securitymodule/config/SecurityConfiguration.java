@@ -81,12 +81,12 @@ public class SecurityConfiguration {
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(authorizationExceptionHandler))
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requestMatcherRegistry -> {
-                    requestMatcherRegistry.requestMatchers(
-                "/api/v1/auth/**",
-                        "/api/v1/accounts/email-otp/**",
-                        "/api/v1/accounts/verify-otp",
-                        "/ws-registry/**").permitAll();
-                    requestMatcherRegistry.anyRequest().authenticated();
+//                    requestMatcherRegistry.requestMatchers(
+//                "/api/v1/auth/**",
+//                        "/api/v1/accounts/email-otp/**",
+//                        "/api/v1/accounts/verify-otp",
+//                        "/ws-registry/**").permitAll();
+                    requestMatcherRegistry.anyRequest().permitAll();
                 })
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtValidationFilter(), UsernamePasswordAuthenticationFilter.class);
