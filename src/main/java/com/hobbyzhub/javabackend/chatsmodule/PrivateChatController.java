@@ -43,7 +43,7 @@ public class PrivateChatController {
         .build();
 
         chatModelService.createNewChat(newChat);
-        ChatModelResponse response = new ChatModelResponse(chatId, new ArrayList<>());
+        ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(ChatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
@@ -62,7 +62,7 @@ public class PrivateChatController {
         @RequestParam(name = "size", defaultValue = "100") Integer size) {
         List<ChatModel> chats = chatModelService.getChatsByParticipantId(participantId, page, 100);
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
-            ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), new ArrayList<>());
+            ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
             chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(ChatModelUtils::deriveUserInformation).toList());
             return chatModelResponse;
         }).toList();
