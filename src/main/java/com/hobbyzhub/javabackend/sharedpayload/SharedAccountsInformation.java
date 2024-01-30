@@ -3,6 +3,7 @@ package com.hobbyzhub.javabackend.sharedpayload;
 import lombok.*;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class SharedAccountsInformation {

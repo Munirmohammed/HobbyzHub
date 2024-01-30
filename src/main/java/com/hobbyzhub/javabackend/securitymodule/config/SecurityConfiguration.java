@@ -84,9 +84,9 @@ public class SecurityConfiguration {
                     requestMatcherRegistry.requestMatchers(
                 "/api/v1/auth/**",
                         "/api/v1/accounts/email-otp/**",
-                        "/api/v1/accounts/verify-otp",
+                        "/api/v1/accounts/verify-otp/**",
                         "/ws-registry/**").permitAll();
-                    requestMatcherRegistry.anyRequest().permitAll();
+                    requestMatcherRegistry.anyRequest().authenticated();
                 })
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtValidationFilter(), UsernamePasswordAuthenticationFilter.class);

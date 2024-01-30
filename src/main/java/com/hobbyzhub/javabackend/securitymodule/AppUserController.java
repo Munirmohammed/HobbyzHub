@@ -167,7 +167,7 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
-            "Successfully retrieved user details details",
+            "Successfully retrieved user details",
             true,
             HttpStatus.OK.value(),
             responseList

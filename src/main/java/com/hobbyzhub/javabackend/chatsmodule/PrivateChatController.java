@@ -2,6 +2,7 @@ package com.hobbyzhub.javabackend.chatsmodule;
 
 import com.hobbyzhub.javabackend.chatsmodule.entity.ChatModel;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.GetChatsForUserRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.response.ChatModelResponse;
 import com.hobbyzhub.javabackend.chatsmodule.service.ChatModelService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
@@ -27,6 +28,9 @@ public class PrivateChatController {
     @Autowired
     private ChatModelService chatModelService;
 
+    @Autowired
+    private ChatModelUtils chatModelUtils;
+
     @Value("${application.api.version}")
     private String apiVersion;
 
@@ -35,7 +39,7 @@ public class PrivateChatController {
 
     @PostMapping(value = "/create-new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewPrivateChat(@RequestBody CreatePrivateChatRequest request) {
-        String chatId = ChatModelUtils.generateChatId();
+        String chatId = chatModelUtils.generateChatId();
         ChatModel newChat = ChatModel.builder()
             .chatId(chatId)
             .dateTimeCreated(request.getDateTimeCreated())
@@ -44,7 +48,7 @@ public class PrivateChatController {
 
         chatModelService.createNewChat(newChat);
         ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
-        response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(ChatModelUtils::deriveUserInformation).toList());
+        response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
@@ -55,15 +59,12 @@ public class PrivateChatController {
         ));
     }
 
-    @GetMapping(value = "/get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getChatByParticipantId(
-        @RequestParam(name = "participantId") String participantId,
-        @RequestParam(name = "page", defaultValue = "1") Integer page,
-        @RequestParam(name = "size", defaultValue = "100") Integer size) {
-        List<ChatModel> chats = chatModelService.getChatsByParticipantId(participantId, page, 100);
+    @PostMapping(value = "/get-chats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
+        List<ChatModel> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
             ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
-            chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(ChatModelUtils::deriveUserInformation).toList());
+            chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
             return chatModelResponse;
         }).toList();
 
