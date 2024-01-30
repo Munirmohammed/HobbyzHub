@@ -4,8 +4,12 @@ import com.hobbyzhub.javabackend.chatsmodule.entity.ChatModel;
 import com.hobbyzhub.javabackend.chatsmodule.repository.ChatModelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -20,7 +24,10 @@ public class ChatModelService {
         chatModelRepository.save(newChatModel);
     }
 
-    public void getChatsByParticipantId() {}
+    public List<ChatModel> getChatsByParticipantId(String participantId, Integer page, Integer size) {
+        Pageable pageInfo = PageRequest.of(page, size);
+        return chatModelRepository.findByChatParticipantsContains(participantId, pageInfo).toList();
+    }
 
     public void deleteChatById(String chatId, String participantId) {
         ChatModel existingModel = chatModelRepository.findById(chatId).get();

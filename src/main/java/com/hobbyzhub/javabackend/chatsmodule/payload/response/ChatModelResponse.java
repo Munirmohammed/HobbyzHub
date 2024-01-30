@@ -1,5 +1,6 @@
 package com.hobbyzhub.javabackend.chatsmodule.payload.response;
 
+import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class ChatModelResponse {
     private String chatId;
-    private List<String> chatParticipants;
+    private List<SharedAccountsInformation> chatParticipants;
 }
