@@ -1,5 +1,6 @@
 package com.hobbyzhub.javabackend.securitymodule.util.def;
 
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;

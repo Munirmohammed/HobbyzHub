@@ -7,7 +7,7 @@ import com.hobbyzhub.javabackend.securitymodule.payload.response.RegisterRespons
 import com.hobbyzhub.javabackend.securitymodule.service.AppUserService;
 import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
 import com.hobbyzhub.javabackend.securitymodule.util.def.JwtUtils;
-import com.hobbyzhub.javabackend.securitymodule.util.def.UserDetailsImpl;
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
 import com.hobbyzhub.javabackend.sharedexceptions.SuccessWithErrorException;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;

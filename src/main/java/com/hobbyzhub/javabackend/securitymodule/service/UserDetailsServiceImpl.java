@@ -2,7 +2,7 @@ package com.hobbyzhub.javabackend.securitymodule.service;
 
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import com.hobbyzhub.javabackend.securitymodule.repository.AppUserRepository;
-import com.hobbyzhub.javabackend.securitymodule.util.def.UserDetailsImpl;
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

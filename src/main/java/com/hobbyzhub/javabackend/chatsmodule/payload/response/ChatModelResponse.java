@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ChatModelResponse {
     private String chatId;
+    private String type;
     private String dateTimeCreated;
     private List<SharedAccountsInformation> chatParticipants;
 }

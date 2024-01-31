@@ -8,6 +8,7 @@ import com.hobbyzhub.javabackend.chatsmodule.service.ChatModelService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
 import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Slf4j
@@ -43,11 +47,18 @@ public class PrivateChatController {
         ChatModel newChat = ChatModel.builder()
             .chatId(chatId)
             .dateTimeCreated(request.getDateTimeCreated())
-            .chatParticipants(request.getChatParticipants())
+            .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
         .build();
+        newChat = chatModelService.createNewChat(newChat);
 
-        chatModelService.createNewChat(newChat);
-        ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
+        // swap the indexes of the participants if required
+        this.reduceIndexes(newChat.getChatParticipants(), request.getMyUserId());
+
+        ChatModelResponse response = new ChatModelResponse(
+            chatId,
+            newChat.getChatParticipants().size() <= 2 ? "private" : "group",
+            newChat.getDateTimeCreated(),
+            new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
@@ -63,8 +74,14 @@ public class PrivateChatController {
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
         List<ChatModel> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
-            ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
+            ChatModelResponse chatModelResponse = new ChatModelResponse(
+                chatModel.getChatId(),
+                chatModel.getChatParticipants().size() <= 2 ? "private" : "group",
+                chatModel.getDateTimeCreated(),
+                new ArrayList<>());
+            this.reduceIndexes(chatModel.getChatParticipants(), request.getParticipantId());
             chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+
             return chatModelResponse;
         }).toList();
 
@@ -92,5 +109,7 @@ public class PrivateChatController {
         ));
     }
 
-
+    private void reduceIndexes(List<String> participantsList, String userId) {
+        participantsList.remove(userId);
+    }
 }

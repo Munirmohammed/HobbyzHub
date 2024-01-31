@@ -9,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePrivateChatRequest {
-    private List<String> chatParticipants;
+    private String myUserId;
+    private String otherUserId;
     private String dateTimeCreated;
 }
