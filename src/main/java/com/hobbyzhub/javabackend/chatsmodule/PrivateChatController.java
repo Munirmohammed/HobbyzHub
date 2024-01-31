@@ -52,7 +52,7 @@ public class PrivateChatController {
         chatModelService.createNewChat(newChat);
 
         // swap the indexes of the participants if required
-        this.swapIndexes(newChat.getChatParticipants());
+        this.reduceIndexes(newChat.getChatParticipants(), request.getMyUserId());
 
         ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
@@ -73,7 +73,7 @@ public class PrivateChatController {
             ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
 
             // swap the indexes if needed
-            this.swapIndexes(chatModel.getChatParticipants());
+            this.reduceIndexes(chatModel.getChatParticipants(), request.getParticipantId());
 
             chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
             return chatModelResponse;
@@ -103,11 +103,7 @@ public class PrivateChatController {
         ));
     }
 
-    private void swapIndexes(List<String> participantsList) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer primaryParticipantIndex = participantsList.indexOf(userDetails.getUserId());
-        if(Objects.equals(0, primaryParticipantIndex)) {
-            Collections.swap(participantsList, 0, 1);
-        }
+    private void reduceIndexes(List<String> participantsList, String userId) {
+        participantsList.remove(userId);
     }
 }
