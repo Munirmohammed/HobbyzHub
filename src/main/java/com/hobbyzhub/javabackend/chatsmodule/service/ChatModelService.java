@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -20,8 +21,13 @@ public class ChatModelService {
     @Autowired
     MongoTemplate chatModelTemplate;
 
-    public void createNewChat(ChatModel newChatModel) {
-        chatModelRepository.save(newChatModel);
+    public ChatModel createNewChat(ChatModel newChatModel) {
+        ChatModel existingChatModel = chatModelRepository.findByChatParticipantsIsContainingAllIgnoreCase(newChatModel.getChatParticipants());
+        if(Objects.isNull(existingChatModel)) {
+            return chatModelRepository.save(newChatModel);
+        } else {
+            return existingChatModel;
+        }
     }
 
     public List<ChatModel> getChatsByParticipantId(String participantId, Integer page, Integer size) {

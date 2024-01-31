@@ -49,12 +49,16 @@ public class PrivateChatController {
             .dateTimeCreated(request.getDateTimeCreated())
             .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
         .build();
-        chatModelService.createNewChat(newChat);
+        newChat = chatModelService.createNewChat(newChat);
 
         // swap the indexes of the participants if required
         this.reduceIndexes(newChat.getChatParticipants(), request.getMyUserId());
 
-        ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
+        ChatModelResponse response = new ChatModelResponse(
+            chatId,
+            newChat.getChatParticipants().size() <= 2 ? "private" : "group",
+            newChat.getDateTimeCreated(),
+            new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
@@ -70,12 +74,14 @@ public class PrivateChatController {
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
         List<ChatModel> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
-            ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
-
-            // swap the indexes if needed
+            ChatModelResponse chatModelResponse = new ChatModelResponse(
+                chatModel.getChatId(),
+                chatModel.getChatParticipants().size() <= 2 ? "private" : "group",
+                chatModel.getDateTimeCreated(),
+                new ArrayList<>());
             this.reduceIndexes(chatModel.getChatParticipants(), request.getParticipantId());
-
             chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+
             return chatModelResponse;
         }).toList();
 
