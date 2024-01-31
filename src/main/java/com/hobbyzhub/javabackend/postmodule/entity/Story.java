@@ -32,7 +32,7 @@ public class Story {
     private String creationTime;
     private String storyCaption;
     /*
-    *s deletion time should null for a start
+    * deletion time should null for a start
     * */
     private String deletionTime;
 
