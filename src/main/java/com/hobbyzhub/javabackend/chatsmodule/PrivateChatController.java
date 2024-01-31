@@ -8,6 +8,7 @@ import com.hobbyzhub.javabackend.chatsmodule.service.ChatModelService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
 import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Slf4j
@@ -43,10 +47,13 @@ public class PrivateChatController {
         ChatModel newChat = ChatModel.builder()
             .chatId(chatId)
             .dateTimeCreated(request.getDateTimeCreated())
-            .chatParticipants(request.getChatParticipants())
+            .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
         .build();
-
         chatModelService.createNewChat(newChat);
+
+        // swap the indexes of the participants if required
+        this.swapIndexes(newChat.getChatParticipants());
+
         ChatModelResponse response = new ChatModelResponse(chatId, newChat.getDateTimeCreated(), new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
@@ -64,6 +71,10 @@ public class PrivateChatController {
         List<ChatModel> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
             ChatModelResponse chatModelResponse = new ChatModelResponse(chatModel.getChatId(), chatModel.getDateTimeCreated(), new ArrayList<>());
+
+            // swap the indexes if needed
+            this.swapIndexes(chatModel.getChatParticipants());
+
             chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
             return chatModelResponse;
         }).toList();
@@ -92,5 +103,11 @@ public class PrivateChatController {
         ));
     }
 
-
+    private void swapIndexes(List<String> participantsList) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer primaryParticipantIndex = participantsList.indexOf(userDetails.getUserId());
+        if(Objects.equals(0, primaryParticipantIndex)) {
+            Collections.swap(participantsList, 0, 1);
+        }
+    }
 }

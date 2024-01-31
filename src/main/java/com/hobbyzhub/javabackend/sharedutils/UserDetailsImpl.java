@@ -1,4 +1,4 @@
-package com.hobbyzhub.javabackend.securitymodule.util.def;
+package com.hobbyzhub.javabackend.sharedutils;
 
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import lombok.Data;
