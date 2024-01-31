@@ -246,6 +246,17 @@ public class AppUserService implements AppUserServiceDef {
         return appUserRepository.findByFullName(searchSlug, pageInfo).stream().parallel().peek(appUser -> appUser.setPassword(null)).toList();
     }
 
+    /*
+    *  @utility method
+    * @author ameda
+    * */
+
+    @Override
+    public AppUser findUserByEmail(String email) {
+       return  appUserRepository.findUserByEmail(email).orElseThrow(
+                ()-> new EntityNotFoundException("specified entity could not be established..."));
+    }
+
     private String generateId() {
         return UUID.randomUUID().toString()
                 .replace("-", "")
