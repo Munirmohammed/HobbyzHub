@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "chats-collection")
+@Document(collection = "chats_collection")
 public class ChatModel implements Serializable {
     @Serial
     private static final long serialVersionUID = UUID.randomUUID().getLeastSignificantBits();
