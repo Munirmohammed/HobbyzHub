@@ -63,4 +63,18 @@ public class JwtUtils {
     public String getUsernameFromToken(String authToken) {
         return Jwts.parser().verifyWith(key()).build().parseSignedClaims(authToken).getPayload().getSubject();
     }
+
+    public String getUserIdFromToken(String authToken) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(authToken)
+                    .getBody()
+                    .get("userId", String.class);
+        } catch (Exception ex) {
+            log.error("Error extracting userId from token: {}", ex.getMessage());
+            return null;
+        }
+    }
 }

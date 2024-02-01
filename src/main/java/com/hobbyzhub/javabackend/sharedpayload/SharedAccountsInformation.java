@@ -13,6 +13,7 @@ public class SharedAccountsInformation {
     private String gender;
     private String bio;
     private String profileImage;
+    private boolean categoryStatus;
     private String joinedDate;
     private String birthdate;
 }

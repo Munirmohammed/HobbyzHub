@@ -69,6 +69,9 @@ public class AppUser implements Serializable {
     @Column(name = "new_account")
     private boolean newAccount;
 
+    @Column(name = "category_status")
+    private boolean categoryStatus = false;
+
     @Column(name = "account_active")
     private boolean accountActive;
 }

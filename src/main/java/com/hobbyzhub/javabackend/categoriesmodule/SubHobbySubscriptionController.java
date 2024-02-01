@@ -7,8 +7,10 @@ import com.hobbyzhub.javabackend.categoriesmodule.payload.request.CreateDeleteSu
 import com.hobbyzhub.javabackend.categoriesmodule.payload.request.ReadSubscriptionsRequest;
 import com.hobbyzhub.javabackend.categoriesmodule.payload.response.CRUHobbyCategoryResponse;
 import com.hobbyzhub.javabackend.categoriesmodule.service.SubHobbySubscriberService;
+import com.hobbyzhub.javabackend.securitymodule.SharedAccounts;
 import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
+import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,11 +39,22 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
     @Autowired
     private SubHobbySubscriberService subHobbySubscriberService;
 
+    @Autowired
+    private SharedAccounts sharedAccounts;
+
+
     @Override
     @PostMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> subscribeUserToSubCategory(@RequestBody CreateDeleteSubscriptionRequest request) {
         SubHobbySubscriber subscriber = this.mapPayloadToEntity(request);
         try {
+            String userId = request.getUserId();
+            log.info("Subscribing user with ID: {}", userId);
+            SharedAccountsInformation userInformation = sharedAccounts.retrieveSharedAccount(userId);
+            subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
+            userInformation.setCategoryStatus(true);
+            // Update user information
+            sharedAccounts.updateUserInformation(userId, userInformation);
             subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
             return ResponseEntity.ok(new GenericResponse<>(
                 apiVersion,
@@ -49,7 +62,7 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
                 "Successfully subscribed to sub category",
                 true,
                 HttpStatus.OK.value(),
-                null
+                    null
             ));
         } catch(EntityNotFoundException ex) {
             log.error("Attempt at subscribing to non-existent category");

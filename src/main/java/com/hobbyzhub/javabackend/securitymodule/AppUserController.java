@@ -1,23 +1,32 @@
 package com.hobbyzhub.javabackend.securitymodule;
 
 import com.hobbyzhub.javabackend.securitymodule.advice.MessagingException;
+import com.hobbyzhub.javabackend.securitymodule.advice.TokenValidationException;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.OpUserAccountRequest;
+import com.hobbyzhub.javabackend.securitymodule.payload.request.RefreshTokenRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.SearchAccountsRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.VerifyEmailRequest;
+import com.hobbyzhub.javabackend.securitymodule.payload.response.RefreshTokenResponse;
 import com.hobbyzhub.javabackend.securitymodule.payload.response.UserDetailsResponse;
 import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
+import com.hobbyzhub.javabackend.securitymodule.util.def.JwtUtils;
+
 import com.hobbyzhub.javabackend.securitymodule.util.def.controller.AppUserControllerDef;
 import com.hobbyzhub.javabackend.securitymodule.util.def.service.AppUserServiceDef;
 import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
+import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +45,9 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
 
     @Autowired
     private AppUserServiceDef appUserService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Override
     @PostMapping(value = "/email-otp")
@@ -123,6 +135,7 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
 
             UserDetailsResponse response = (UserDetailsResponse) super.mapEntityToPayload(appUser);
             // authServiceFeign.markAccountAsNotNew(userId);
+            appUserService.markAccountNotNew(userId);
 
             return ResponseEntity.ok().body(new GenericResponse<>(
                     apiVersion,
@@ -179,5 +192,69 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
         return new ResponseEntity<>(
                 appUserService.findUserById(userId)
                 ,HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/refresh-token", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> refreshToken(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        AppUser user = null;
+        try {
+            String token;
+
+            // Check if the token is provided in the header
+            if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7);
+
+                // Validate the token and check if it is not expired
+                boolean isValidToken = jwtUtils.validateToken(token);
+                if (!isValidToken) {
+                    throw new TokenValidationException("Token is expired or invalid");
+                }
+
+                // Get user details from the database
+                user = appUserService.findUserById(jwtUtils.getUserIdFromToken(token));
+
+                // Create Authentication object (You need to modify this part based on your UserDetailsImpl implementation)
+                UserDetailsImpl userDetails = new UserDetailsImpl(user); // Modify this line according to your UserDetailsImpl
+
+                // Build the response
+                RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
+                refreshTokenResponse.setVerified(true);
+                refreshTokenResponse.setToken(jwtUtils.generateToken(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())));
+                refreshTokenResponse.setNewUser(user.isNewAccount());
+                refreshTokenResponse.setCategoryStatus(user.isCategoryStatus());
+
+                return ResponseEntity.ok().body(new GenericResponse<>(
+                        apiVersion,
+                        organizationName,
+                        "Token verification successful",
+                        true,
+                        HttpStatus.OK.value(),
+                        refreshTokenResponse
+                ));
+            } else {
+                throw new TokenValidationException("Authorization header is missing or invalid");
+            }
+        } catch (TokenValidationException ex) {
+            log.error("Token validation failed", ex);
+            // Handle token validation error
+            RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
+            refreshTokenResponse.setVerified(false);
+            refreshTokenResponse.setToken(null);
+            assert user != null;
+            refreshTokenResponse.setNewUser(user.isNewAccount());
+            refreshTokenResponse.setCategoryStatus(user.isCategoryStatus());
+
+            return ResponseEntity.ok().body(new GenericResponse<>(
+                    apiVersion,
+                    organizationName,
+                    "Token verification failed",
+                    false,
+                    HttpStatus.OK.value(),
+                    refreshTokenResponse
+            ));
+        } catch (Exception e) {
+            log.error("Error refreshing token", e);
+            throw new ServerErrorException("Error refreshing token");
+        }
     }
 }
