@@ -51,8 +51,6 @@ public class PrivateChatController {
             .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
         .build();
         newChat = chatModelService.createNewChat(newChat);
-
-        // swap the indexes of the participants if required
         this.reduceIndexes(newChat.getChatParticipants(), request.getMyUserId());
 
         ChatModelResponse response = new ChatModelResponse(
