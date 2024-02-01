@@ -1,12 +1,14 @@
 server:
-  port: 8765
+  port: 8080
 spring:
   application:
-    name: hobbyzhub-backend
+    name:
+  profiles:
+    active: "dev"
   datasource:
     url: jdbc:mysql://localhost:3306/hobbyz_hub_schema?useSSL=false
-    username: root
-    password: rootUser@123
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -19,16 +21,16 @@ spring:
     database: mysql
   activemq:
     broker-url: tcp://localhost:61616
-    user: admin
-    password: admin
+    user:
+    password:
   data:
     mongodb:
       uri: mongodb://127.0.0.1:27017/hobbyz_hub_database
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: martbikathi@gmail.com
-    password: kzrjxvcsofaaxoly
+    host:
+    port:
+    username:
+    password:
     properties:
       mail:
         smtp:
@@ -38,10 +40,10 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: 'AKIAQUYSNZ3OI32HJQNU'
-      secret-key: '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'
+      access-key:
+      secret-key:
     region:
-      static: us-east-1
+      static:
     stack:
 application:
   api:
@@ -49,10 +51,10 @@ application:
   organization:
     name: Tropic World Paradise
   security:
-    jwtSecret: LgFRkEdNkP4dUFYxlc4aT4J2rZ8JeEf9wNpC0gU2Qcw9LRM4kgVcvNvUTcv6rhPwLgFRkEdNkP4dUFYxlc4aT4J2rZ8JeEf9wNpC0gU2Qcw9LRM4kgVcvN
+    jwtSecret:
     expirationMS: 2419200000 # expires after 28 days
   bucket:
-    name: stoneagebucket
+    name:
 
 
 
