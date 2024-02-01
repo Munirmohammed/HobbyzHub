@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class Comment implements Serializable {
+public final class Comment implements Serializable {
     @Id
     private String commentId;
     private Integer commentCount=0;

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class Like implements Serializable {
+public final class Like implements Serializable {
     @Id
     private String likeId;
     private String username;

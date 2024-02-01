@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HashTag implements Serializable {
+public final class HashTag implements Serializable {
     @Id
     private String hashTagId;
     private String tagName;

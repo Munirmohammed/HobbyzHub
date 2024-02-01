@@ -19,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Post implements Serializable {
+public final class Post implements Serializable {
     @Id
     private String postId;
     private String userId;
