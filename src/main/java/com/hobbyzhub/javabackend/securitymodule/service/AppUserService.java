@@ -148,6 +148,9 @@ public class AppUserService implements AppUserServiceDef {
             }
         }
 
+        // change newAccount value to false
+        appUser.setNewAccount(false);
+
         // delegate profile image
         if(Objects.isNull(profileImage)) {
             appUserRepository.save(appUser);
