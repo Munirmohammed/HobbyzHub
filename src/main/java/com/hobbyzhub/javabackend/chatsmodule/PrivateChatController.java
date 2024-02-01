@@ -46,6 +46,7 @@ public class PrivateChatController {
         String chatId = chatModelUtils.generateChatId();
         ChatModel newChat = ChatModel.builder()
             .chatId(chatId)
+            .chatType("private")
             .dateTimeCreated(request.getDateTimeCreated())
             .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
         .build();
@@ -56,7 +57,7 @@ public class PrivateChatController {
 
         ChatModelResponse response = new ChatModelResponse(
             chatId,
-            newChat.getChatParticipants().size() <= 2 ? "private" : "group",
+            newChat.getChatType(),
             newChat.getDateTimeCreated(),
             new ArrayList<>());
         response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
@@ -76,7 +77,7 @@ public class PrivateChatController {
         List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
             ChatModelResponse chatModelResponse = new ChatModelResponse(
                 chatModel.getChatId(),
-                chatModel.getChatParticipants().size() <= 2 ? "private" : "group",
+                chatModel.getChatType(),
                 chatModel.getDateTimeCreated(),
                 new ArrayList<>());
             this.reduceIndexes(chatModel.getChatParticipants(), request.getParticipantId());

@@ -22,6 +22,7 @@ public class ChatModel implements Serializable {
 
     @Id
     private String chatId;
+    private String chatType;
     private List<String> chatParticipants; // in a group chat, this list will be limited in size
     private String dateTimeCreated;
 }
