@@ -8,13 +8,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MessageModelService {
     @Autowired
     private MessageModelRepository messageModelRepository;
 
-    public Page<MessageModel> getPagedMessageList(Integer pageSize, Integer pageNumber, String chatId) {
+    public List<MessageModel> getPagedMessageList(Integer pageSize, Integer pageNumber, String chatId) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return messageModelRepository.findAllByChatId(chatId, page);
+        return messageModelRepository.findAllByChatId(chatId, page).toList();
     }
 }
