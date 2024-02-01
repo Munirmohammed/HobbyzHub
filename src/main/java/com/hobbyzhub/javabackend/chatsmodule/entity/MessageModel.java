@@ -6,13 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
-@Document(collection = "message-model-collection")
-@Getter
-@Setter
-@ToString
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Document(collection = "messages_collection")
 public class MessageModel implements Serializable {
     /**
      * The id of the message
