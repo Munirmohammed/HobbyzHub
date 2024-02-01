@@ -10,6 +10,9 @@ public interface AppUserServiceDef {
     AppUser findUserById(String userId);
     AppUser updateUserDetails(String userId, String fullName, String birthdate, String gender, String bio, MultipartFile profileImage);
     void verifyOTP(String email, Integer otp);
+
+    void saveUser(AppUser appUser);
+
     void deleteAccountByEmail(String email);
     void sendVerificationEmail(String email, String intent);
     List<AppUser> getAccountsList(int pageNumber, int pageSize);
