@@ -6,6 +6,7 @@ import com.hobbyzhub.javabackend.followersmodule.payload.response.UserPreviewRes
 import com.hobbyzhub.javabackend.followersmodule.service.UserRelationshipService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,12 @@ public class UserRelationshipController {
     @Autowired
     private UserRelationshipService userRelationshipService;
 
+    @Value("${application.api.version}")
+    private String apiVersion;
+
+    @Value("${application.organization.name}")
+    private String organizationName;
+
     @PostMapping(value = "/follow-unfollow")
     public ResponseEntity<GenericServiceResponse<UserPreviewResponse>> followUnfollowUser(
             @RequestBody UserRelationshipRequest userRelationshipRequest) {
@@ -40,8 +47,8 @@ public class UserRelationshipController {
         String message = isFollowing ? "User is following" : "User is not following";
 
         GenericServiceResponse<FollowingStatus> response = new GenericServiceResponse<>(
-                "apiVersion",
-                "organizationName",
+                apiVersion,
+                organizationName,
                 message,
                 true,
                 HttpStatus.OK.value(),
