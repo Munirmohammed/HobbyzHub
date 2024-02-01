@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -62,5 +63,19 @@ public class JwtUtils {
 
     public String getUsernameFromToken(String authToken) {
         return Jwts.parser().verifyWith(key()).build().parseSignedClaims(authToken).getPayload().getSubject();
+    }
+
+    public String getUserIdFromToken(String authToken) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(authToken)
+                    .getBody()
+                    .get("userId", String.class);
+        } catch (Exception ex) {
+            log.error("Error extracting userId from token: {}", ex.getMessage());
+            return null;
+        }
     }
 }
