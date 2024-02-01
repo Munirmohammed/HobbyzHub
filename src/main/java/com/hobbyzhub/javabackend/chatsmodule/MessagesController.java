@@ -1,6 +1,7 @@
 package com.hobbyzhub.javabackend.chatsmodule;
 
 import com.hobbyzhub.javabackend.chatsmodule.entity.MessageModel;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.GetMessagesRequest;
 import com.hobbyzhub.javabackend.chatsmodule.service.MessageModelService;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -8,17 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping(value = "/api")
 @Slf4j
-public class MessageModelController {
+@RestController
+@RequestMapping(value = "/api/v1/chats/messages")
+public class MessagesController {
     @Autowired
     MessageModelService messageModelService;
 
@@ -28,18 +26,12 @@ public class MessageModelController {
     @Value("${application.organization.name}")
     private String organizationName;
 
-    public ResponseEntity<?> getPagedMessageList(
-        @PathVariable String chatId,
-        @RequestParam(defaultValue = "0") String page,
-        @RequestParam(defaultValue = "150", required = false) String size) {
-
-        // convert all parameters down to proper integers
-        Integer pageNumber = Integer.valueOf(page);
-        Integer pageSize = Integer.valueOf(size);
+    @PostMapping(value = "/retrieve")
+    public ResponseEntity<?> getPagedMessageList(@RequestBody GetMessagesRequest request) {
         try {
-            List<MessageModel> messageList = messageModelService.getPagedMessageList(pageSize, pageNumber, chatId).stream().toList();
+            List<MessageModel> messageList = messageModelService.getPagedMessageList(request.getSize(), request.getPage(), request.getChatId());
             if(messageList.isEmpty()) {
-                log.warn("Getting empty chat message list for chatId: {}", chatId);
+                log.warn("Getting empty chat message list for chatId: {}", request.getChatId());
                 return new ResponseEntity<>(new GenericResponse<>(
                     apiVersion,
                     organizationName,
@@ -49,7 +41,7 @@ public class MessageModelController {
                 HttpStatus.OK);
             }
 
-            log.info("Gotten chat message list successfully for chatId: {}", chatId);
+            log.info("Gotten chat message list successfully for chatId: {}", request.getChatId());
             return new ResponseEntity<>(new GenericResponse<>(
                 apiVersion,
                 organizationName,
@@ -59,7 +51,7 @@ public class MessageModelController {
                 messageList),
             HttpStatus.OK);
         } catch(Exception ex) {
-            log.error("Error getting paged list of messages for chatId: {}. Caused by: {}", chatId, ex.getMessage());
+            log.error("Error getting paged list of messages for chatId: {}. Caused by: {}", request.getChatId(), ex.getMessage());
             return new ResponseEntity<>(new GenericResponse<>(
                 apiVersion,
                 organizationName,
