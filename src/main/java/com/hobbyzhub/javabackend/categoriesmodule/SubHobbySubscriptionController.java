@@ -42,6 +42,7 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
     @Autowired
     private SharedAccounts sharedAccounts;
 
+
     @Override
     @PostMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> subscribeUserToSubCategory(@RequestBody CreateDeleteSubscriptionRequest request) {
@@ -54,6 +55,7 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
             userInformation.setCategoryStatus(true);
             // Update user information
             sharedAccounts.updateUserInformation(userId, userInformation);
+            subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
             return ResponseEntity.ok(new GenericResponse<>(
                 apiVersion,
                 organizationName,

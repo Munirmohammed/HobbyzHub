@@ -11,6 +11,7 @@ import com.hobbyzhub.javabackend.securitymodule.payload.response.RefreshTokenRes
 import com.hobbyzhub.javabackend.securitymodule.payload.response.UserDetailsResponse;
 import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
 import com.hobbyzhub.javabackend.securitymodule.util.def.JwtUtils;
+
 import com.hobbyzhub.javabackend.securitymodule.util.def.controller.AppUserControllerDef;
 import com.hobbyzhub.javabackend.securitymodule.util.def.service.AppUserServiceDef;
 import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
@@ -256,8 +257,4 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
             throw new ServerErrorException("Error refreshing token");
         }
     }
-
-
-
-
 }

@@ -5,7 +5,6 @@ import com.hobbyzhub.javabackend.followersmodule.payload.response.UserPreviewRes
 import com.hobbyzhub.javabackend.postmodule.service.PostService;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import com.hobbyzhub.javabackend.securitymodule.service.AppUserService;
-import com.hobbyzhub.javabackend.securitymodule.util.def.EntityModelMapper;
 import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
 import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
 import lombok.AllArgsConstructor;
@@ -128,5 +127,4 @@ public class SharedAccounts {
             throw new ServerErrorException("Error updating user information");
         }
     }
-
 }

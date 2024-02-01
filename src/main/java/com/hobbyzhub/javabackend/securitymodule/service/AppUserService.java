@@ -291,6 +291,4 @@ public class AppUserService implements AppUserServiceDef {
         url = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
         return url;
     }
-
-
 }
