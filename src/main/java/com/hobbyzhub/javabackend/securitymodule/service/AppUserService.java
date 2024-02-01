@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.hobbyzhub.javabackend.securitymodule.types.Gender;
 import com.hobbyzhub.javabackend.securitymodule.util.def.service.AppUserServiceDef;
 import com.hobbyzhub.javabackend.sharedexceptions.MessagingException;
+import com.hobbyzhub.javabackend.sharedexceptions.ServerErrorException;
 import com.hobbyzhub.javabackend.sharedutils.StorageService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
@@ -177,6 +178,16 @@ public class AppUserService implements AppUserServiceDef {
     }
 
     @Override
+    public void saveUser(AppUser appUser) {
+        try {
+            appUserRepository.save(appUser);
+        } catch (Exception e) {
+            log.error("Error saving user", e);
+            throw new ServerErrorException("Error saving user");
+        }
+    }
+
+    @Override
     public void deleteAccountByEmail(String email) {
         AppUser appUser = appUserRepository.findUserByEmail(email).orElseThrow(
                 () -> new EntityNotFoundException("User by email " + email + " not found")
@@ -280,4 +291,6 @@ public class AppUserService implements AppUserServiceDef {
         url = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
         return url;
     }
+
+
 }
