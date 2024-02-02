@@ -8,28 +8,45 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class Help {
+public final class Help implements Serializable {
+    /*
+    * final because it shouldn't be extended whatsoever
+    * */
+    private static final long serialVersionUID = 1L;
     @Id
-    private String helpId;
+    private final String helpId;
     @NotNull
-    private String userId;
+    private final String userId;
     @NotNull
     @NotEmpty
-    private String email;
+    private final String email;
     @Lob
     @Column(name = "profile_image", columnDefinition = "BLOB")
-    private String profilePic;
+    private final String profilePic;
     @NotNull
     @NotEmpty
     @Column(columnDefinition = "TEXT")
-    private String message;
+    private final String message;
     @NotNull
     @NotEmpty
-    private String fullName;
+    private final String fullName;
+    /*
+    * initialize mutable fields only once
+    *  in the constructor
+    * the fields are thread-safe as well
+    * */
+
+    public Help(String helpId, String userId, String email, String profilePic, String message, String fullName) {
+        this.helpId = helpId;
+        this.userId = userId;
+        this.email = email;
+        this.profilePic = profilePic;
+        this.message = message;
+        this.fullName = fullName;
+    }
 }

@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HelpService {
+public final class HelpService {
     private final HelpRepository helpRepository;
     private final AppUserService appUserService;
 

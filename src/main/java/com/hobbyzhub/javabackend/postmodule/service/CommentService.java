@@ -23,6 +23,10 @@ import java.util.UUID;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    /*
+    * counter variable shouldn't be made final as
+    * it keeps on updating the count
+    **/
     private int counter=1;
     public String setId(){
         return UUID.randomUUID().toString()

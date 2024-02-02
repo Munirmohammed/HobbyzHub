@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Getter
-@Setter
 public final class Comment implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     private String commentId;
     private Integer commentCount=0;
