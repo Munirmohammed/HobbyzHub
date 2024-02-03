@@ -220,6 +220,7 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
                 refreshTokenResponse.setVerified(true);
                 refreshTokenResponse.setToken(jwtUtils.generateToken(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())));
                 refreshTokenResponse.setNewUser(user.isNewAccount());
+                refreshTokenResponse.setCategoryStatus(user.isCategoryStatus());
 
                 return ResponseEntity.ok().body(new GenericResponse<>(
                         apiVersion,
