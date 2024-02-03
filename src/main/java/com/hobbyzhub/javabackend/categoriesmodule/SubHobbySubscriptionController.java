@@ -50,7 +50,10 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
         try {
             String userId = request.getUserId();
             log.info("Subscribing user with ID: {}", userId);
-            subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
+            SharedAccountsInformation userInformation = sharedAccounts.retrieveSharedAccount(userId);
+            userInformation.setCategoryStatus(true);
+            // Update user information
+            sharedAccounts.updateUserInformation(userId, userInformation);
             subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
             return ResponseEntity.ok(new GenericResponse<>(
                 apiVersion,
