@@ -156,8 +156,6 @@ public class AppUserService implements AppUserServiceDef {
         if(Objects.isNull(profileImage)) {
             appUserRepository.save(appUser);
         } else {
-            String fileUrl = this.generateFileUrl(profileImage);
-            System.out.println("File url: " + fileUrl);
             appUser.setProfileImage(this.generateFileUrl(profileImage));
         }
 

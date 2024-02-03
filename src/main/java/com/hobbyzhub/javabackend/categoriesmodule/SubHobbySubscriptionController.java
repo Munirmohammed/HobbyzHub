@@ -50,11 +50,7 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
         try {
             String userId = request.getUserId();
             log.info("Subscribing user with ID: {}", userId);
-            SharedAccountsInformation userInformation = sharedAccounts.retrieveSharedAccount(userId);
             subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
-            userInformation.setCategoryStatus(true);
-            // Update user information
-            sharedAccounts.updateUserInformation(userId, userInformation);
             subHobbySubscriberService.subscribeToSubCategory(subscriber, request.getSubCategoryId());
             return ResponseEntity.ok(new GenericResponse<>(
                 apiVersion,
@@ -62,7 +58,7 @@ public class SubHobbySubscriptionController extends AbstractSubscriptionControll
                 "Successfully subscribed to sub category",
                 true,
                 HttpStatus.OK.value(),
-                    null
+                null
             ));
         } catch(EntityNotFoundException ex) {
             log.error("Attempt at subscribing to non-existent category");

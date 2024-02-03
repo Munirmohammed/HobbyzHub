@@ -4,7 +4,6 @@ import com.hobbyzhub.javabackend.securitymodule.advice.MessagingException;
 import com.hobbyzhub.javabackend.securitymodule.advice.TokenValidationException;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.OpUserAccountRequest;
-import com.hobbyzhub.javabackend.securitymodule.payload.request.RefreshTokenRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.SearchAccountsRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.VerifyEmailRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.response.RefreshTokenResponse;
@@ -221,7 +220,6 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
                 refreshTokenResponse.setVerified(true);
                 refreshTokenResponse.setToken(jwtUtils.generateToken(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())));
                 refreshTokenResponse.setNewUser(user.isNewAccount());
-                refreshTokenResponse.setCategoryStatus(user.isCategoryStatus());
 
                 return ResponseEntity.ok().body(new GenericResponse<>(
                         apiVersion,
@@ -242,7 +240,6 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
             refreshTokenResponse.setToken(null);
             assert user != null;
             refreshTokenResponse.setNewUser(user.isNewAccount());
-            refreshTokenResponse.setCategoryStatus(user.isCategoryStatus());
 
             return ResponseEntity.ok().body(new GenericResponse<>(
                     apiVersion,

@@ -27,4 +27,16 @@ public class ControllerAdvice {
             null
         ));
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<?> handleGeneralException(Exception ex, WebRequest re) {
+        return ResponseEntity.internalServerError().body(new GenericResponse<>(
+            apiVersion,
+            organizationName,
+            "Request failed with unknown reason",
+            false,
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            null
+        ));
+    }
 }
