@@ -1,8 +1,6 @@
 package com.hobbyzhub.javabackend.chatsmodule;
 
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.PrivateMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.MessageDTO;
 import com.hobbyzhub.javabackend.chatsmodule.service.StompMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,37 +16,37 @@ public class StompMessageController {
 	StompMessageService stompMessageService;
 	
 	@MessageMapping("/private")
-	public void privateMessage(@Payload PrivateMessageDTO messagePayload) {
-		Boolean result = stompMessageService.sendPrivateMessage(messagePayload.getToUserId(), messagePayload);
+	public void privateMessage(@Payload MessageDTO messagePayload) {
+		Boolean result = stompMessageService.sendPrivateMessage(messagePayload.getMetadata().getToDestinationId(), messagePayload);
 		if(result == Boolean.TRUE) {
 			log.info(
 				"Successfully sent private message fromUserId: {} toUserId: {}", 
-				messagePayload.getFromUserId(),
-				messagePayload.getToUserId()
+				messagePayload.getMetadata().getFromUserId(),
+				messagePayload.getMetadata().getToDestinationId()
 			);
 		} else {
 			log.error(
 				"Failed to send private message fromUserId: {} toUserId: {}",
-				messagePayload.getFromUserId(),
-				messagePayload.getToUserId()
+				messagePayload.getMetadata().getFromUserId(),
+				messagePayload.getMetadata().getToDestinationId()
 			);
 		}
 	}
 	
 	@MessageMapping("/group")
-	public void groupMessage(@Payload GroupMessageDTO messagePayload) {
-		boolean result = stompMessageService.sendGroupMessage(messagePayload.getToGroupId(), messagePayload);
+	public void groupMessage(@Payload MessageDTO messagePayload) {
+		boolean result = stompMessageService.sendGroupMessage(messagePayload.getMetadata().getToDestinationId(), messagePayload);
 		if(result == Boolean.TRUE) {
 			log.info(
-				"Successfully sent group message fromUserId: {} toGroupId: {}", 
-				messagePayload.getFromUserId(),
-				messagePayload.getToGroupId()
+				"Successfully sent group message fromUserId: {} toGroupId: {}",
+				messagePayload.getMetadata().getFromUserId(),
+				messagePayload.getMetadata().getToDestinationId()
 			);
 		} else {
 			log.error(
 				"Failed to send group message fromUserId: {} toGroupId: {}",
-				messagePayload.getFromUserId(),
-				messagePayload.getToGroupId()
+				messagePayload.getMetadata().getFromUserId(),
+				messagePayload.getMetadata().getToDestinationId()
 			);
 		}
 	}
