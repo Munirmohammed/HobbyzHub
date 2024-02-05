@@ -2,8 +2,8 @@ package com.hobbyzhub.javabackend.chatsmodule.service;
 
 import java.time.LocalDate;
 
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.entity.MessageModel;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.MessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -22,46 +22,16 @@ public class DestinationManagementService {
 	@Autowired
 	MessageStoreConvenienceMethods convenienceMethods;
 	
-	/*
-	public boolean createPrivateDestination(String userId) {
-		PrivateMessageDTO internalPrivateMessage = 
-			PrivateMessageDTO.builder()
-			.fromUserId("Hobbyzhub")
-			.toUserId(userId)
-			.message("Welcome to Hobbyzhub. We're thrilled to have you.")
-			.dateSent(Mess)
-			.build();
-		
-		try {
-			String internalMessage = new ObjectMapper().writer().withDefaultPrettyPrinter()
-				.writeValueAsString(internalPrivateMessage);
-			
-			jmsTemplate.send("user-" + userId, messageCreator -> {
-                TextMessage deliverable = messageCreator.createTextMessage();
-                deliverable.setText(internalMessage);
-                return deliverable;
-            });
-			
-			convenienceMethods.storePrivateMessage(internalPrivateMessage);
-			log.info("JMSTemplate created new private destination of ID: {}", "user-" + userId);
-			return true;
-		} catch(Exception ex) {
-			log.error("JMSTemplate error creating private destination: {}", ex.getMessage());
-			return false;
-		}
-	}
-	 */
-	
 	public boolean createGroupDestination(String groupId) {
 		try {
 			String dateToday = LocalDate.now().toString();
-			GroupMessageDTO internalGroupMessage =
-				GroupMessageDTO.builder()
-				.fromUserId("Hobbyzub")
-				.toGroupId(groupId)
-				.message("Group Created On: " + dateToday)
-				.dateSent(dateToday)
-				.build();
+			MessageDTO internalGroupMessage = MessageDTO.builder()
+					.messageString("Group created on " + dateToday)
+					.metadata(new MessageModel.MessageMetadata(
+						"",
+						"group-" + groupId,
+						"Hobbyzhub"))
+			.build();
 			
 			String internalMessage = new ObjectMapper().writer().withDefaultPrettyPrinter()
 				.writeValueAsString(internalGroupMessage);
@@ -72,7 +42,7 @@ public class DestinationManagementService {
 	            return deliverable;
 	        });
 			
-			convenienceMethods.storeGroupChatMessage(internalGroupMessage);
+			convenienceMethods.storeMessage(internalGroupMessage);
 			log.info("JMSTemplate created new group destination of ID: {}", "group-" + groupId);
 			return true;
 		} catch(Exception ex) {

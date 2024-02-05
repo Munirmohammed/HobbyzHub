@@ -15,6 +15,7 @@ import java.util.List;
 public class MessageModel implements Serializable {
     @Id
     private String messageModelId;
+    private String chatId;
     private String messageString;
     private List<OptionalMedia> media; // can be null for a message with no media
     private MessageMetadata metadata;
@@ -35,6 +36,5 @@ public class MessageModel implements Serializable {
         private String dateTimeSent; // DD-MM-YY, HH:MM
         private String toDestinationId; // the destination ID can be a queue or a topic
         private String fromUserId;
-        private String chatId;
     }
 }

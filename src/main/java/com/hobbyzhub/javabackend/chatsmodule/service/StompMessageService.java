@@ -1,7 +1,6 @@
 package com.hobbyzhub.javabackend.chatsmodule.service;
 
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.GroupMessageDTO;
-import com.hobbyzhub.javabackend.chatsmodule.payload.request.PrivateMessageDTO;
+import com.hobbyzhub.javabackend.chatsmodule.payload.request.MessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class StompMessageService {
 	@Autowired
 	MessageStoreConvenienceMethods convenienceMethods;
 	
-	public Boolean sendPrivateMessage(String toUserId, PrivateMessageDTO message) {
+	public Boolean sendPrivateMessage(String toUserId, MessageDTO message) {
 		try {
             String jsonObj = new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(message);
             // first send the message to the queue
@@ -31,7 +30,7 @@ public class StompMessageService {
             });
 
             // then store it once we are sure it is on the queue
-            convenienceMethods.storePrivateMessage(message);
+            // convenienceMethods.storeMessage(message);
             return Boolean.TRUE;
         } catch (Exception ex) {
             log.error("Encountered error trying to send private message: {}", ex.getMessage());
@@ -39,7 +38,7 @@ public class StompMessageService {
         }
 	}
 	
-	public boolean sendGroupMessage(String toGroupId, GroupMessageDTO message) {
+	public boolean sendGroupMessage(String toGroupId, MessageDTO message) {
 		try {
             // first send the message to the queue
             String jsonObj = new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(message);
@@ -50,7 +49,7 @@ public class StompMessageService {
             });
 
             // then store it once we know it's on the queue
-            convenienceMethods.storeGroupChatMessage(message);
+            convenienceMethods.storeMessage(message);
             return Boolean.TRUE;
         } catch (Exception ex) {
         	log.error("Encountered error trying to send group message: {}", ex.getMessage());
