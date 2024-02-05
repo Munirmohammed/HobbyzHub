@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "stories")
 @Builder
-public final class Story {
+public class Story {
     @Id
     private String storyId;
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)

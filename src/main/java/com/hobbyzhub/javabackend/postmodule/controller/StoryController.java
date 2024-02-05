@@ -12,6 +12,7 @@ import com.hobbyzhub.javabackend.postmodule.service.StoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,8 +24,11 @@ import java.util.List;
 class StoryController {
     private final StoryService storyService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadStory(@RequestBody @Valid StoryRequest request,
+    @PostMapping(value = "/upload", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE
+    })
+    public ResponseEntity<?> uploadStory(@RequestPart StoryRequest request,
             @RequestPart("files") List<MultipartFile> files){
         StoryCreateResponse storyCreateResponse = storyService.uploadStory(request, files);
         assert storyCreateResponse.getEmail().equalsIgnoreCase(request.getEmail());
