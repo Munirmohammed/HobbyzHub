@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Builder
 @Data
@@ -12,22 +13,28 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Document(collection = "messages_collection")
 public class MessageModel implements Serializable {
-    /**
-     * The id of the message
-     */
     @Id
     private String messageModelId;
-
-    /**
-     * The id of the chat that the message belongs to
-     */
     private String chatId;
     private String messageString;
-    private String fromUserId;
+    private List<OptionalMedia> media; // can be null for a message with no media
+    private MessageMetadata metadata;
 
-    // the destination ID can be a queue or a topic
-    private String toDestinationId;
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OptionalMedia {
+        private String mediaUrl;
+        private String type;
+        private Long size; // (in MBs)e.g 10
+    }
 
-    // DD-MM-YY, HH:MM
-    private String dateTimeSent;
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MessageMetadata {
+        private String dateTimeSent; // DD-MM-YY, HH:MM
+        private String toDestinationId; // the destination ID can be a queue or a topic
+        private String fromUserId;
+    }
 }

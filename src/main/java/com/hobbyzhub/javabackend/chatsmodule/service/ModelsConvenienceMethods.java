@@ -26,11 +26,4 @@ public class ModelsConvenienceMethods {
         // should never return null
         return null;
     }
-
-    public String createMessageModelId(String fromUserId) {
-        String randomUUID = UUID.randomUUID().toString()
-            .replace("-", "").substring(0, 12);
-
-        return String.format("%s-%s", randomUUID, fromUserId);
-    }
 }
