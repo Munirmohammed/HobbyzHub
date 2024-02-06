@@ -30,7 +30,7 @@ public class StompMessageService {
             });
 
             // then store it once we are sure it is on the queue
-            // convenienceMethods.storeMessage(message);
+            convenienceMethods.storeMessage(message);
             return Boolean.TRUE;
         } catch (Exception ex) {
             log.error("Encountered error trying to send private message: {}", ex.getMessage());

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -22,10 +23,13 @@ public class MessageStoreConvenienceMethods {
     public void storeMessage(MessageDTO privateMessageDTO) {
         // first convert the DTO to a MongoDB-Compatible message
         // the id of the message is manually generated
+
+        log.info("attempting to store chat message");
         MessageModel message = MessageModel.builder()
+            .chatId(privateMessageDTO.getChatId())
             .messageString(privateMessageDTO.getMessageString())
-                .media(new ArrayList<>(privateMessageDTO.getMedia()))
-                .metadata(privateMessageDTO.getMetadata())
+            .media(Objects.isNull(privateMessageDTO.getMedia()) ? null : new ArrayList<>(privateMessageDTO.getMedia()))
+            .metadata(privateMessageDTO.getMetadata())
         .build();
 
         // then store the message in the MessageStore
