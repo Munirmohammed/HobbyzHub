@@ -15,7 +15,5 @@ import lombok.*;
 @Builder
 public class StoryRequest {
     private String storyCaption;
-    private String email;
     private int storyDuration;
-
 }

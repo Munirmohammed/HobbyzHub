@@ -227,6 +227,5 @@ public class PostController {
                     HttpStatus.NOT_FOUND);
         }
     }
-
 }
 
