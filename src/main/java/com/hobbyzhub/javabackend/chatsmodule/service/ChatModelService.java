@@ -1,6 +1,6 @@
 package com.hobbyzhub.javabackend.chatsmodule.service;
 
-import com.hobbyzhub.javabackend.chatsmodule.entity.ChatModel;
+import com.hobbyzhub.javabackend.chatsmodule.entity.PrivateChat;
 import com.hobbyzhub.javabackend.chatsmodule.repository.ChatModelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +21,22 @@ public class ChatModelService {
     @Autowired
     MongoTemplate chatModelTemplate;
 
-    public ChatModel createNewChat(ChatModel newChatModel) {
-        ChatModel existingChatModel = chatModelRepository.findByChatParticipantsIsContainingAllIgnoreCase(newChatModel.getChatParticipants());
-        if(Objects.isNull(existingChatModel)) {
-            return chatModelRepository.save(newChatModel);
+    public PrivateChat createNewChat(PrivateChat newPrivateChat) {
+        PrivateChat existingPrivateChat = chatModelRepository.findByChatParticipantsIsContainingAllIgnoreCase(newPrivateChat.getChatParticipants());
+        if(Objects.isNull(existingPrivateChat)) {
+            return chatModelRepository.save(newPrivateChat);
         } else {
-            return existingChatModel;
+            return existingPrivateChat;
         }
     }
 
-    public List<ChatModel> getChatsByParticipantId(String participantId, Integer page, Integer size) {
+    public List<PrivateChat> getChatsByParticipantId(String participantId, Integer page, Integer size) {
         Pageable pageInfo = PageRequest.of(page, size);
         return chatModelRepository.findByChatParticipantsContains(participantId, pageInfo).toList();
     }
 
     public void deleteChatById(String chatId, String participantId) {
-        ChatModel existingModel = chatModelRepository.findById(chatId).get();
+        PrivateChat existingModel = chatModelRepository.findById(chatId).get();
         existingModel.getChatParticipants().remove(participantId);
 
         // if no one else is left in the chat participants, delete all the messages

@@ -1,14 +1,12 @@
 package com.hobbyzhub.javabackend.chatsmodule;
 
-import com.hobbyzhub.javabackend.chatsmodule.entity.ChatModel;
+import com.hobbyzhub.javabackend.chatsmodule.entity.PrivateChat;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.GetChatsForUserRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.response.ChatModelResponse;
 import com.hobbyzhub.javabackend.chatsmodule.service.ChatModelService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
-import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
-import com.hobbyzhub.javabackend.sharedutils.UserDetailsImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @Slf4j
@@ -44,21 +39,21 @@ public class PrivateChatController {
     @PostMapping(value = "/create-new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewPrivateChat(@RequestBody CreatePrivateChatRequest request) {
         String chatId = chatModelUtils.generateChatId();
-        ChatModel newChat = ChatModel.builder()
-            .chatId(chatId)
-            .chatType("private")
-            .dateTimeCreated(request.getDateTimeCreated())
-            .chatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())))
-        .build();
-        newChat = chatModelService.createNewChat(newChat);
-        this.reduceIndexes(newChat.getChatParticipants(), request.getMyUserId());
+        PrivateChat newPrivateChat = new PrivateChat();
+        newPrivateChat.setChatId(chatId);
+        newPrivateChat.setChatType("private");
+        newPrivateChat.setDateTimeCreated(request.getDateTimeCreated());
+        newPrivateChat.setChatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())));
+        
+        newPrivateChat = chatModelService.createNewChat(newPrivateChat);
+        this.reduceIndexes(newPrivateChat.getChatParticipants(), request.getMyUserId());
 
         ChatModelResponse response = new ChatModelResponse(
             chatId,
-            newChat.getChatType(),
-            newChat.getDateTimeCreated(),
+            newPrivateChat.getChatType(),
+            newPrivateChat.getDateTimeCreated(),
             new ArrayList<>());
-        response.setChatParticipants(newChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+        response.setChatParticipants(newPrivateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
@@ -71,15 +66,15 @@ public class PrivateChatController {
 
     @PostMapping(value = "/get-chats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
-        List<ChatModel> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
-        List<ChatModelResponse> responseList = chats.parallelStream().map(chatModel -> {
+        List<PrivateChat> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
+        List<ChatModelResponse> responseList = chats.parallelStream().map(privateChat -> {
             ChatModelResponse chatModelResponse = new ChatModelResponse(
-                chatModel.getChatId(),
-                chatModel.getChatType(),
-                chatModel.getDateTimeCreated(),
+                privateChat.getChatId(),
+                privateChat.getChatType(),
+                privateChat.getDateTimeCreated(),
                 new ArrayList<>());
-            this.reduceIndexes(chatModel.getChatParticipants(), request.getParticipantId());
-            chatModelResponse.setChatParticipants(chatModel.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+            this.reduceIndexes(privateChat.getChatParticipants(), request.getParticipantId());
+            chatModelResponse.setChatParticipants(privateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
 
             return chatModelResponse;
         }).toList();

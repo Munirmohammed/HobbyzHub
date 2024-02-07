@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Document(collection = "chats_collection")
+@Document(collection = "private_chats")
 public class PrivateChat extends GenericChat implements Serializable {
     @Serial
     private static final long serialVersionUID = UUID.randomUUID().getLeastSignificantBits();
