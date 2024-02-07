@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class StoryService {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -57,8 +60,13 @@ public class StoryService {
     *
     *
     * */
-    public StoryCreateResponse uploadStory(StoryRequest request, List<MultipartFile> files){
-        AppUser userByEmail = appUserService.findUserByEmail(request.getEmail());
+    @Modifying
+    public StoryCreateResponse uploadStory(StoryRequest request, List<MultipartFile> files,String email){
+        AppUser userByEmail = appUserService.findUserByEmail(email);
+        assert  userByEmail !=null;
+        /*
+        * if not nul proceed and create a story for user...
+        * */
         Story story = Story.builder()
                 .storyId(generateId())
                 .storyCaption(request.getStoryCaption())
@@ -114,5 +122,13 @@ public class StoryService {
             viewResponses.add(modelMapper.map(story,StoryViewResponse.class));
         }
         return viewResponses;
+    }
+
+    public AppUser getUserByEmail(String email) {
+        return appUserService.findUserByEmail(email);
+    }
+
+    public List<Story> retrieveStoriesPerUser(String email) {
+        return  storyRepository.findByEmail(email);
     }
 }
