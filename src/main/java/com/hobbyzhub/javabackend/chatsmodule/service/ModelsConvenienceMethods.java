@@ -4,22 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @Slf4j
 public class ModelsConvenienceMethods {
     @Autowired
-    private ChatModelService chatModelService;
+    private PrivateChatService privateChatService;
 
     public String checkIfChatModelExistsById(String fromUserId, String toUserId) {
         String idOptionA = String.format("%s-%s", fromUserId, toUserId);
         String idOptionB = String.format("%s-%s", toUserId, fromUserId);
 
         // check if one of the ids does exist
-        if(chatModelService.chatModelExistsById(idOptionA)) {
+        if(privateChatService.chatModelExistsById(idOptionA)) {
             return idOptionA;
-        } else if(chatModelService.chatModelExistsById(idOptionB)) {
+        } else if(privateChatService.chatModelExistsById(idOptionB)) {
             return idOptionB;
         }
 

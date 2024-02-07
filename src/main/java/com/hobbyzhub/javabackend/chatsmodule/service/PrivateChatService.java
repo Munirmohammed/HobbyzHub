@@ -1,7 +1,7 @@
 package com.hobbyzhub.javabackend.chatsmodule.service;
 
 import com.hobbyzhub.javabackend.chatsmodule.entity.PrivateChat;
-import com.hobbyzhub.javabackend.chatsmodule.repository.ChatModelRepository;
+import com.hobbyzhub.javabackend.chatsmodule.repository.PrivateChatRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -14,17 +14,17 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-public class ChatModelService {
+public class PrivateChatService {
     @Autowired
-    ChatModelRepository chatModelRepository;
+    PrivateChatRepository privateChatRepository;
 
     @Autowired
     MongoTemplate chatModelTemplate;
 
     public PrivateChat createNewChat(PrivateChat newPrivateChat) {
-        PrivateChat existingPrivateChat = chatModelRepository.findByChatParticipantsIsContainingAllIgnoreCase(newPrivateChat.getChatParticipants());
+        PrivateChat existingPrivateChat = privateChatRepository.findByChatParticipantsIsContainingAllIgnoreCase(newPrivateChat.getChatParticipants());
         if(Objects.isNull(existingPrivateChat)) {
-            return chatModelRepository.save(newPrivateChat);
+            return privateChatRepository.save(newPrivateChat);
         } else {
             return existingPrivateChat;
         }
@@ -32,25 +32,25 @@ public class ChatModelService {
 
     public List<PrivateChat> getChatsByParticipantId(String participantId, Integer page, Integer size) {
         Pageable pageInfo = PageRequest.of(page, size);
-        return chatModelRepository.findByChatParticipantsContains(participantId, pageInfo).toList();
+        return privateChatRepository.findByChatParticipantsContains(participantId, pageInfo).toList();
     }
 
     public void deleteChatById(String chatId, String participantId) {
-        PrivateChat existingModel = chatModelRepository.findById(chatId).get();
+        PrivateChat existingModel = privateChatRepository.findById(chatId).get();
         existingModel.getChatParticipants().remove(participantId);
 
         // if no one else is left in the chat participants, delete all the messages
         // else the other participant has not deleted this chat
         if(existingModel.getChatParticipants().isEmpty()) {
             // TODO: figure out how to delete all the chat messages of a chat
-            chatModelRepository.deleteById(existingModel.getChatId());
+            privateChatRepository.deleteById(existingModel.getChatId());
         } else {
             // else save the model with one less participant since the other person has not deleted yet
-            chatModelRepository.save(existingModel);
+            privateChatRepository.save(existingModel);
         }
     }
 
     public boolean chatModelExistsById(String id) {
-        return chatModelRepository.existsById(id);
+        return privateChatRepository.existsById(id);
     }
 }

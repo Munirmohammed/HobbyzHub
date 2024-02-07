@@ -4,7 +4,7 @@ import com.hobbyzhub.javabackend.chatsmodule.entity.PrivateChat;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.GetChatsForUserRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.response.ChatModelResponse;
-import com.hobbyzhub.javabackend.chatsmodule.service.ChatModelService;
+import com.hobbyzhub.javabackend.chatsmodule.service.PrivateChatService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
 import lombok.Data;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/chats/private")
 public class PrivateChatController {
     @Autowired
-    private ChatModelService chatModelService;
+    private PrivateChatService privateChatService;
 
     @Autowired
     private ChatModelUtils chatModelUtils;
@@ -45,7 +45,7 @@ public class PrivateChatController {
         newPrivateChat.setDateTimeCreated(request.getDateTimeCreated());
         newPrivateChat.setChatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())));
         
-        newPrivateChat = chatModelService.createNewChat(newPrivateChat);
+        newPrivateChat = privateChatService.createNewChat(newPrivateChat);
         this.reduceIndexes(newPrivateChat.getChatParticipants(), request.getMyUserId());
 
         ChatModelResponse response = new ChatModelResponse(
@@ -66,7 +66,7 @@ public class PrivateChatController {
 
     @PostMapping(value = "/get-chats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
-        List<PrivateChat> chats = chatModelService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
+        List<PrivateChat> chats = privateChatService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<ChatModelResponse> responseList = chats.parallelStream().map(privateChat -> {
             ChatModelResponse chatModelResponse = new ChatModelResponse(
                 privateChat.getChatId(),
@@ -91,7 +91,7 @@ public class PrivateChatController {
 
     @DeleteMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteChat(@RequestParam String chatId, @RequestParam String userId) {
-        chatModelService.deleteChatById(chatId, userId);
+        privateChatService.deleteChatById(chatId, userId);
 
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,

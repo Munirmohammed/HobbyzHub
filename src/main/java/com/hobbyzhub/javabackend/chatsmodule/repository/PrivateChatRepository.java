@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatModelRepository extends MongoRepository<PrivateChat, String> {
+public interface PrivateChatRepository extends MongoRepository<PrivateChat, String> {
     Page<PrivateChat> findByChatParticipantsContains(String participantId, Pageable pageable);
     PrivateChat findByChatParticipantsIsContainingAllIgnoreCase(List<String> participants);
 }
