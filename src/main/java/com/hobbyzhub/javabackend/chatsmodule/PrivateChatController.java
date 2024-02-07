@@ -3,7 +3,7 @@ package com.hobbyzhub.javabackend.chatsmodule;
 import com.hobbyzhub.javabackend.chatsmodule.entity.PrivateChat;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.CreatePrivateChatRequest;
 import com.hobbyzhub.javabackend.chatsmodule.payload.request.GetChatsForUserRequest;
-import com.hobbyzhub.javabackend.chatsmodule.payload.response.ChatModelResponse;
+import com.hobbyzhub.javabackend.chatsmodule.payload.response.PrivateChatResponse;
 import com.hobbyzhub.javabackend.chatsmodule.service.PrivateChatService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
@@ -48,7 +48,7 @@ public class PrivateChatController {
         newPrivateChat = privateChatService.createNewChat(newPrivateChat);
         this.reduceIndexes(newPrivateChat.getChatParticipants(), request.getMyUserId());
 
-        ChatModelResponse response = new ChatModelResponse(
+        PrivateChatResponse response = new PrivateChatResponse(
             chatId,
             newPrivateChat.getChatType(),
             newPrivateChat.getDateTimeCreated(),
@@ -67,16 +67,16 @@ public class PrivateChatController {
     @PostMapping(value = "/get-chats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
         List<PrivateChat> chats = privateChatService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
-        List<ChatModelResponse> responseList = chats.parallelStream().map(privateChat -> {
-            ChatModelResponse chatModelResponse = new ChatModelResponse(
+        List<PrivateChatResponse> responseList = chats.parallelStream().map(privateChat -> {
+            PrivateChatResponse privateChatResponse = new PrivateChatResponse(
                 privateChat.getChatId(),
                 privateChat.getChatType(),
                 privateChat.getDateTimeCreated(),
                 new ArrayList<>());
             this.reduceIndexes(privateChat.getChatParticipants(), request.getParticipantId());
-            chatModelResponse.setChatParticipants(privateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+            privateChatResponse.setChatParticipants(privateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
 
-            return chatModelResponse;
+            return privateChatResponse;
         }).toList();
 
         return ResponseEntity.ok().body(new GenericResponse<>(

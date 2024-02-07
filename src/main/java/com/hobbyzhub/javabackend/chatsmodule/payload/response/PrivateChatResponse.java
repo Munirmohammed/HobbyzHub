@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatModelResponse {
+public class PrivateChatResponse {
     private String chatId;
     private String type;
     private String dateTimeCreated;
