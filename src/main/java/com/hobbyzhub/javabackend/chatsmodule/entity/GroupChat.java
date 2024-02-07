@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Document(collection = "group_chats")
-public class GroupChatModel  extends GenericChat implements Serializable {
+public class GroupChat extends GenericChat implements Serializable {
     @Serial
     private static final long serialVersionUID = UUID.randomUUID().getLeastSignificantBits();
 
