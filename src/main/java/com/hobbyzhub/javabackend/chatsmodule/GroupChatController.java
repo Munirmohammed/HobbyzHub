@@ -161,4 +161,19 @@ public class GroupChatController {
             null)
         );
     }
+
+    @DeleteMapping(value = "/delete-group", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteGroup(@RequestBody GroupChatOpRequest request) {
+        groupChatService.deleteGroupChat(request.getGroupChatId());
+
+        log.info("Successfully made member admin");
+        return ResponseEntity.ok().body(new GenericResponse<>(
+            apiVersion,
+            organizationName,
+            "Successfully deleted group by id: " + request.getGroupChatId(),
+            true,
+            HttpStatus.OK.value(),
+            null)
+        );
+    }
 }

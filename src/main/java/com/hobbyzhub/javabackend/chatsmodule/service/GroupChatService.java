@@ -11,6 +11,9 @@ public class GroupChatService {
     private GroupChatRepository groupChatRepository;
 
     @Autowired
+    private MessageModelService messageModelService;
+
+    @Autowired
     private DestinationManagementService destinationManagementService;
 
     public GroupChat createGroupChat(GroupChat groupChat) {
@@ -27,6 +30,7 @@ public class GroupChatService {
     // TODO: handle this later
     public void deleteGroupChat(String groupChatId) {
         groupChatRepository.deleteById(groupChatId);
+        messageModelService.deleteMessagesByChatId(groupChatId);
     }
 
     public void makeMemberAdmin(String memberId, String groupChatId) {
