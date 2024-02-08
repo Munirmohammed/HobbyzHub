@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -120,7 +117,7 @@ public class GroupChatController {
         );
     }
 
-    @PostMapping(value = "/add-member", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/add-member", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addMember(@RequestBody GroupChatOpRequest request) {
         groupChatService.addNewMember(request.getMemberId(), request.getGroupChatId());
 
@@ -135,15 +132,30 @@ public class GroupChatController {
         );
     }
 
-    @PostMapping(value = "/remove-member", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/remove-member", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> removeMember(@RequestBody GroupChatOpRequest request) {
-        groupChatService.addNewMember(request.getMemberId(), request.getGroupChatId());
+        groupChatService.removeMember(request.getMemberId(), request.getGroupChatId());
 
         log.info("Successfully removed member group chat");
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
             "Successfully removed member from group chat",
+            true,
+            HttpStatus.OK.value(),
+            null)
+        );
+    }
+
+    @PatchMapping(value = "/make-admin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> makeMemberAdmin(@RequestBody GroupChatOpRequest request) {
+        groupChatService.makeMemberAdmin(request.getMemberId(), request.getGroupChatId());
+
+        log.info("Successfully made member admin");
+        return ResponseEntity.ok().body(new GenericResponse<>(
+            apiVersion,
+            organizationName,
+            "Successfully made member admin",
             true,
             HttpStatus.OK.value(),
             null)
