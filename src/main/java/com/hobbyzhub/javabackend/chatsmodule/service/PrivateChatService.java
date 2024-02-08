@@ -19,6 +19,9 @@ public class PrivateChatService {
     PrivateChatRepository privateChatRepository;
 
     @Autowired
+    private MessageModelService messageModelService;
+
+    @Autowired
     MongoTemplate chatModelTemplate;
 
     public PrivateChat createNewChat(PrivateChat newPrivateChat) {
@@ -42,8 +45,10 @@ public class PrivateChatService {
         // if no one else is left in the chat participants, delete all the messages
         // else the other participant has not deleted this chat
         if(existingModel.getChatParticipants().isEmpty()) {
-            // TODO: figure out how to delete all the chat messages of a chat
             privateChatRepository.deleteById(existingModel.getChatId());
+
+            // on a separate thread, delete messages for that chat
+            messageModelService.deleteMessagesByChatId(chatId);
         } else {
             // else save the model with one less participant since the other person has not deleted yet
             privateChatRepository.save(existingModel);
