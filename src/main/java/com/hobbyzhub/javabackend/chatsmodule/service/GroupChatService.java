@@ -10,8 +10,14 @@ public class GroupChatService {
     @Autowired
     private GroupChatRepository groupChatRepository;
 
+    @Autowired
+    private DestinationManagementService destinationManagementService;
+
     public GroupChat createGroupChat(GroupChat groupChat) {
-        return groupChatRepository.save(groupChat);
+        GroupChat createdGroupChat = groupChatRepository.save(groupChat);
+        destinationManagementService.createGroupDestination(createdGroupChat.getChatId(), groupChat.getDateTimeCreated());
+
+        return createdGroupChat;
     }
 
     public GroupChat getGroupChatById(String groupChatId) {

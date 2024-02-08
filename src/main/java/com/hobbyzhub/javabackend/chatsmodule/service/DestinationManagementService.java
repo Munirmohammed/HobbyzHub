@@ -22,32 +22,30 @@ public class DestinationManagementService {
 	@Autowired
 	MessageStoreConvenienceMethods convenienceMethods;
 	
-	public boolean createGroupDestination(String groupId) {
+	public void createGroupDestination(String chatId, String dateTimeCreated) {
 		try {
-			String dateToday = LocalDate.now().toString();
 			MessageDTO internalGroupMessage = MessageDTO.builder()
-					.messageString("Group created on " + dateToday)
-					.metadata(new MessageModel.MessageMetadata(
-						"",
-						"group-" + groupId,
-						"Hobbyzhub"))
+				.chatId(chatId)
+				.messageString("Group created on " + dateTimeCreated)
+				.metadata(new MessageModel.MessageMetadata(
+					dateTimeCreated,
+					"group-" + chatId,
+					"Hobbyzhub Internals"))
 			.build();
 			
 			String internalMessage = new ObjectMapper().writer().withDefaultPrettyPrinter()
 				.writeValueAsString(internalGroupMessage);
 			
-			jmsTemplate.send("group-" + groupId, messageCreator -> {
+			jmsTemplate.send("group-" + chatId, messageCreator -> {
 	            TextMessage deliverable = messageCreator.createTextMessage();
 	            deliverable.setText(internalMessage);
 	            return deliverable;
 	        });
 			
 			convenienceMethods.storeMessage(internalGroupMessage);
-			log.info("JMSTemplate created new group destination of ID: {}", "group-" + groupId);
-			return true;
+			log.info("JMSTemplate created new group destination of ID: {}", "group-" + chatId);
 		} catch(Exception ex) {
 			log.error("JMSTemplate error creating group destination: {}", ex.getMessage());
-			return false;
 		}
 	}
 }
