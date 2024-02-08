@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Data
 @Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/chats/groups")

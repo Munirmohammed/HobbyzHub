@@ -66,7 +66,7 @@ public abstract class AbstractEntityHelperDef<T> {
     }
 
     protected final String generateFileUrl(MultipartFile file) {
-        String name = storageService.uploadPicture(file);
+        String name = storageService.uploadFile(file);
         String url = "";
 
         Date expiration = new Date();

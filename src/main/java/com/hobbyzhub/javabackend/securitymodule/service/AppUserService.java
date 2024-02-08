@@ -276,7 +276,7 @@ public class AppUserService implements AppUserServiceDef {
     }
 
     private String generateFileUrl(MultipartFile file) {
-        String name = storageService.uploadPicture(file);
+        String name = storageService.uploadFile(file);
         String url = "";
 
         Date expiration = new Date();
