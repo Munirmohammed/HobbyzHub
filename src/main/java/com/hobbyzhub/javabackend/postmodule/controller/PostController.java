@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @RestController
@@ -67,7 +68,6 @@ public class PostController {
     public ResponseEntity<?> posts(){
         List<Post> posts = postService.posts();
         List<GetAllPostsResponse> result = new ArrayList<>();
-        log.info("size"+posts.size());
         for(Post post: posts){
             GetAllPostsResponse body = GetAllPostsResponse.builder()
                     .postId(post.getPostId())
