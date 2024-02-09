@@ -3,7 +3,11 @@ package com.hobbyzhub.javabackend.chatsmodule.service;
 import com.hobbyzhub.javabackend.chatsmodule.entity.GroupChat;
 import com.hobbyzhub.javabackend.chatsmodule.repository.GroupChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GroupChatService {
@@ -25,6 +29,11 @@ public class GroupChatService {
 
     public GroupChat getGroupChatById(String groupChatId) {
         return groupChatRepository.findById(groupChatId).orElse(null);
+    }
+
+    public List<GroupChat> getGroupsForUser(String userId, Integer page, Integer size) {
+        Pageable pageInfo = PageRequest.of(page, size);
+        return groupChatRepository.findByChatParticipantsContains(userId, pageInfo).toList();
     }
 
     // TODO: handle this later

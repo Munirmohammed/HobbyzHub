@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GroupChatOpRequest {
     private String memberId, groupChatId;
+    private Integer page, size;
 }

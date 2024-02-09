@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -113,6 +114,37 @@ public class GroupChatController {
             true,
             HttpStatus.OK.value(),
             response)
+        );
+    }
+
+    @PostMapping(value = "/get-for-user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getGroupsForUser(@RequestBody GroupChatOpRequest request) {
+        List<GroupChat> userGroupChat = groupChatService.getGroupsForUser(request.getMemberId(), request.getPage(), request.getSize());
+        List<GroupChatResponse> responseList = userGroupChat.parallelStream().map(groupChat -> {
+            GroupChatResponse response = new GroupChatResponse(
+                groupChat.getChatId(),
+                groupChat.getChatType(),
+                groupChat.getGroupName(),
+                groupChat.getGroupDescription(),
+                groupChat.getGroupIcon(),
+                groupChat.getDateTimeCreated(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            response.setChatAdmins(groupChat.getAdmins().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+            response.setChatParticipants(groupChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+            return response;
+        }).toList();
+
+        log.info("Successfully retrieved list for user with id: {}", request.getMemberId());
+        return ResponseEntity.ok().body(new GenericResponse<>(
+            apiVersion,
+            organizationName,
+            "Successfully got paged list of user groups",
+            true,
+            HttpStatus.OK.value(),
+            responseList)
         );
     }
 
