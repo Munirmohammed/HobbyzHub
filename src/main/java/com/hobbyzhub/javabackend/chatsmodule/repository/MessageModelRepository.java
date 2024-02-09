@@ -12,4 +12,5 @@ public interface MessageModelRepository extends MongoRepository<MessageModel, St
      * A custom method to help find the list of messages for a particular chatId
      */
     Page<MessageModel> findAllByChatId(String chatId, Pageable page);
+    void deleteAllByChatId(String chatId);
 }

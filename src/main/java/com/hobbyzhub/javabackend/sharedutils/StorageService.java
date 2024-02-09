@@ -25,7 +25,7 @@ public class StorageService {
     @Autowired
     private AmazonS3 s3Client;
 
-    public String uploadPicture(MultipartFile multipartFile) {
+    public String uploadFile(MultipartFile multipartFile) {
         File file = convertMultipartFileToFile(multipartFile);
         String fileName = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
 
@@ -51,7 +51,7 @@ public class StorageService {
         List<String> uploadedFiles =  new ArrayList<>(files.size());
         //check if the file formats are okay...
         for(MultipartFile file: files){
-            String str = uploadPicture(file);
+            String str = uploadFile(file);
             uploadedFiles.add(str);
         }
         return uploadedFiles;
