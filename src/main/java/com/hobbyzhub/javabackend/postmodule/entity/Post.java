@@ -29,6 +29,7 @@ public final class Post implements Serializable {
     @CollectionTable(name = "imageUrls",joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "imageUrls",nullable = false,length=100000,columnDefinition = "LONGBLOB")
     @Lob
+    private List<String> imageUrls =new ArrayList<>();
     private LocalDateTime postTime;
     @JsonManagedReference
     @OneToMany(mappedBy = "postLike",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
@@ -36,7 +37,7 @@ public final class Post implements Serializable {
     @JsonManagedReference
     @OneToMany(mappedBy = "postComment",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Comment> comments =new HashSet<>();
-    private boolean status;    private List<String> imageUrls =new ArrayList<>();
+    private boolean status;
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
