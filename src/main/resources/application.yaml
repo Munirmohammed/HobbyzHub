@@ -37,6 +37,9 @@ spring:
           auth: true
           starttls:
             enable: true
+  redis:
+    host:
+    port:
 cloud:
   aws:
     credentials:

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Slf4j
@@ -46,14 +47,12 @@ public class PrivateChatController {
         newPrivateChat.setChatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())));
         
         newPrivateChat = privateChatService.createNewChat(newPrivateChat);
-        this.reduceIndexes(newPrivateChat.getChatParticipants(), request.getMyUserId());
 
         PrivateChatResponse response = new PrivateChatResponse(
             chatId,
             newPrivateChat.getChatType(),
             newPrivateChat.getDateTimeCreated(),
-            new ArrayList<>());
-        response.setChatParticipants(newPrivateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
+            chatModelUtils.deriveUserInformation(request.getOtherUserId()));
         return ResponseEntity.ok().body(new GenericResponse<>(
             apiVersion,
             organizationName,
@@ -68,15 +67,13 @@ public class PrivateChatController {
     public ResponseEntity<?> getChatByParticipantId(@RequestBody GetChatsForUserRequest request) {
         List<PrivateChat> chats = privateChatService.getChatsByParticipantId(request.getParticipantId(), request.getPage(), request.getSize());
         List<PrivateChatResponse> responseList = chats.parallelStream().map(privateChat -> {
-            PrivateChatResponse privateChatResponse = new PrivateChatResponse(
+            Integer personBIndex = this.deduceIndex(privateChat.getChatParticipants(), request.getParticipantId());
+            return new PrivateChatResponse(
                 privateChat.getChatId(),
                 privateChat.getChatType(),
                 privateChat.getDateTimeCreated(),
-                new ArrayList<>());
-            this.reduceIndexes(privateChat.getChatParticipants(), request.getParticipantId());
-            privateChatResponse.setChatParticipants(privateChat.getChatParticipants().parallelStream().map(chatModelUtils::deriveUserInformation).toList());
-
-            return privateChatResponse;
+                chatModelUtils.deriveUserInformation(privateChat.getChatParticipants().get(personBIndex))
+            );
         }).toList();
 
         return ResponseEntity.ok().body(new GenericResponse<>(
@@ -103,7 +100,8 @@ public class PrivateChatController {
         ));
     }
 
-    private void reduceIndexes(List<String> participantsList, String userId) {
-        participantsList.remove(userId);
+    private Integer deduceIndex(List<String> participantsList, String userId) {
+        Integer myParticipantIndex = participantsList.indexOf(userId);
+        return Objects.equals(myParticipantIndex, 0) ? 1 : 0;
     }
 }
