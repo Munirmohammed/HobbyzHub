@@ -18,7 +18,6 @@ import com.hobbyzhub.javabackend.sharedutils.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,8 +115,6 @@ public class PostService {
             throw new UserAccountNotFoundException("We couldn't resolve user of the passed userId:"+ userId);
         }
     }
-
-//    @Cacheable(value="posts")
     public List<Post> posts() {
         List<Post> posts = postRepository.findAll();
             if(!(posts.isEmpty())){
