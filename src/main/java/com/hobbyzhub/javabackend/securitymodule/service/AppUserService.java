@@ -51,7 +51,7 @@ public class AppUserService implements AppUserServiceDef {
 
     @Autowired
     private EntityManager entityManager;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -238,7 +238,7 @@ public class AppUserService implements AppUserServiceDef {
     @Override
     public void activateAccount(String email) {
         AppUser appUser = appUserRepository.findUserByEmail(email).orElseThrow(
-            () -> new EntityNotFoundException("Account by email " + email + " not found"));
+                () -> new EntityNotFoundException("Account by email " + email + " not found"));
 
         appUser.setAccountActive(true);
         appUserRepository.save(appUser);
@@ -259,13 +259,13 @@ public class AppUserService implements AppUserServiceDef {
     }
 
     /*
-    *  @utility method
-    * @author ameda
-    * */
+     *  @utility method
+     * @author ameda
+     * */
 
     @Override
     public AppUser findUserByEmail(String email) {
-       return  appUserRepository.findUserByEmail(email).orElseThrow(
+        return  appUserRepository.findUserByEmail(email).orElseThrow(
                 ()-> new EntityNotFoundException("specified entity could not be established..."));
     }
 
@@ -285,11 +285,31 @@ public class AppUserService implements AppUserServiceDef {
         expiration.setTime(expTimeMillis);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
-            new GeneratePresignedUrlRequest(bucketName, name)
-                .withMethod(HttpMethod.GET)
-                .withExpiration(expiration);
+                new GeneratePresignedUrlRequest(bucketName, name)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(expiration);
 
         url = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
         return url;
     }
+
+    @Override
+    public void saveFirebaseToken(String userId, String firebaseToken) {
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User by id " + userId + " not found")
+        );
+        appUser.setFirebaseToken(firebaseToken);
+        appUserRepository.save(appUser);
+    }
+
+    @Override
+    public void deleteFirebaseToken(String userId) {
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User by id " + userId + " not found")
+        );
+        appUser.setFirebaseToken(null);
+        appUserRepository.save(appUser);
+    }
+
+
 }

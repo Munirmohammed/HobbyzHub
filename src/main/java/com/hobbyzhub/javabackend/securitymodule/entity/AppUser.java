@@ -74,4 +74,7 @@ public class AppUser implements Serializable {
 
     @Column(name = "account_active")
     private boolean accountActive;
+
+    @Column(name = "firebase_token")
+    private String firebaseToken;
 }

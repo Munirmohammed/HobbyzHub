@@ -13,6 +13,7 @@ import com.hobbyzhub.javabackend.sharedexceptions.SuccessWithErrorException;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -52,12 +56,12 @@ public class AuthenticationController extends EntityModelMapper {
             // generate response body
             RegisterResponse response = new RegisterResponse(credentials.getEmail(), credentials.getUserId());
             return ResponseEntity.ok().body(new GenericResponse<>(
-                apiVersion,
-                organizationName,
-                "Successfully registered new user",
-                true,
-                HttpStatus.OK.value(),
-                response
+                    apiVersion,
+                    organizationName,
+                    "Successfully registered new user",
+                    true,
+                    HttpStatus.OK.value(),
+                    response
             ));
         } catch (EntityExistsException ex) {
             throw new SuccessWithErrorException(ex.getMessage());
@@ -67,23 +71,23 @@ public class AuthenticationController extends EntityModelMapper {
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loginUser(@RequestBody OpUserAccountRequest request) {
         Authentication authentication
-            = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         log.info("Successfully logged in user with id {}", userDetails.getUserId());
         if(authentication.isAuthenticated()) {
             return ResponseEntity.ok().body(new GenericResponse<>(
-                apiVersion,
-                organizationName,
-                "Successfully logged in user",
-                true,
-                HttpStatus.OK.value(),
-                LoginResponse.builder()
-                    .token(jwtUtils.generateToken(authentication))
-                    .email(userDetails.getEmail())
-                    .newAccount(userDetails.isNewAccount())
-                    .userId(userDetails.getUserId())
-                .build()
+                    apiVersion,
+                    organizationName,
+                    "Successfully logged in user",
+                    true,
+                    HttpStatus.OK.value(),
+                    LoginResponse.builder()
+                            .token(jwtUtils.generateToken(authentication))
+                            .email(userDetails.getEmail())
+                            .newAccount(userDetails.isNewAccount())
+                            .userId(userDetails.getUserId())
+                            .build()
             ));
         } else {
             log.error("Unknown error while logging in user in.");
@@ -96,12 +100,12 @@ public class AuthenticationController extends EntityModelMapper {
         appUserService.activateAccount(request.getEmail());
         log.info("Successfully activated account for user with email {}", request.getEmail());
         return ResponseEntity.ok().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            "Successfully activated user account",
-            true,
-            HttpStatus.OK.value(),
-            null
+                apiVersion,
+                organizationName,
+                "Successfully activated user account",
+                true,
+                HttpStatus.OK.value(),
+                null
         ));
     }
 
@@ -112,12 +116,12 @@ public class AuthenticationController extends EntityModelMapper {
 
         appUserService.resetPassword(AppUser);
         return ResponseEntity.ok().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            "Successfully reset user's password",
-            true,
-            HttpStatus.OK.value(),
-            null
+                apiVersion,
+                organizationName,
+                "Successfully reset user's password",
+                true,
+                HttpStatus.OK.value(),
+                null
         ));
     }
 
@@ -127,15 +131,49 @@ public class AuthenticationController extends EntityModelMapper {
             appUserService.deleteAccountByEmail(request.getEmail());
 
             return ResponseEntity.ok().body(new GenericResponse<>(
-                apiVersion,
-                organizationName,
-                "Successfully deleted user account",
-                true,
-                HttpStatus.OK.value(),
-                null
+                    apiVersion,
+                    organizationName,
+                    "Successfully deleted user account",
+                    true,
+                    HttpStatus.OK.value(),
+                    null
             ));
         } catch(EntityExistsException ex) {
             throw new SuccessWithErrorException(ex.getMessage());
         }
     }
+
+    /**
+     *
+     * @param requestBody
+     * @return
+     * @throws BadRequestException
+     * Currently It only deletes the firebase token when the user logged out but we will focus on it later
+     */
+    @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> logoutUser(@RequestBody Map<String, String> requestBody) throws BadRequestException {
+        String userId = requestBody.get("userId");
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required in the request body.");
+        }
+
+        try {
+            appUserService.deleteFirebaseToken(userId);
+            // Clear the security context
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok().body(new GenericResponse<>(
+                    apiVersion,
+                    organizationName,
+                    "Successfully logged out user",
+                    true,
+                    HttpStatus.OK.value(),
+                    null
+            ));
+        } catch (Exception ex) {
+            log.error("Error logging out user", ex);
+            throw new ServerErrorException("Error logging out user");
+        }
+    }
+
+
 }

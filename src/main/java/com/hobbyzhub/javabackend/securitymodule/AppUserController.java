@@ -3,6 +3,7 @@ package com.hobbyzhub.javabackend.securitymodule;
 import com.hobbyzhub.javabackend.securitymodule.advice.MessagingException;
 import com.hobbyzhub.javabackend.securitymodule.advice.TokenValidationException;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
+import com.hobbyzhub.javabackend.securitymodule.payload.request.FirebaseTokenRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.OpUserAccountRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.SearchAccountsRequest;
 import com.hobbyzhub.javabackend.securitymodule.payload.request.VerifyEmailRequest;
@@ -76,12 +77,12 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
     public ResponseEntity<?> verifyOtp(@RequestBody VerifyEmailRequest request) {
         appUserService.verifyOTP(request.getEmail(), request.getTemporaryOtp());
         return ResponseEntity.ok().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            "OTP verification successful",
-            true,
-            HttpStatus.OK.value(),
-            null
+                apiVersion,
+                organizationName,
+                "OTP verification successful",
+                true,
+                HttpStatus.OK.value(),
+                null
         ));
     }
 
@@ -162,12 +163,12 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
                 accountsList.parallelStream().map(super::mapEntityToPayload).toList().parallelStream().map(UserDetailsResponse::new).toList();
 
         return ResponseEntity.ok().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            "Successfully updated user details",
-            true,
-            HttpStatus.OK.value(),
-            accountsResponseList
+                apiVersion,
+                organizationName,
+                "Successfully updated user details",
+                true,
+                HttpStatus.OK.value(),
+                accountsResponseList
         ));
     }
 
@@ -177,12 +178,12 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
         List<UserDetailsResponse> responseList = appUsers.parallelStream().map(user -> (UserDetailsResponse) super.mapEntityToPayload(user)).toList();
 
         return ResponseEntity.ok().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            "Successfully retrieved user details",
-            true,
-            HttpStatus.OK.value(),
-            responseList
+                apiVersion,
+                organizationName,
+                "Successfully retrieved user details",
+                true,
+                HttpStatus.OK.value(),
+                responseList
         ));
     }
 
@@ -255,4 +256,25 @@ public class AppUserController extends EntityModelMapper implements AppUserContr
             throw new ServerErrorException("Error refreshing token");
         }
     }
+
+    @PostMapping(value = "/firebase-token", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> saveFirebaseToken(@RequestBody FirebaseTokenRequest request) {
+        try {
+            // Save Firebase token to the database
+            appUserService.saveFirebaseToken(request.getUserId(), request.getFirebaseToken());
+
+            return ResponseEntity.ok().body(new GenericResponse<>(
+                    apiVersion,
+                    organizationName,
+                    "Firebase token saved successfully",
+                    true,
+                    HttpStatus.OK.value(),
+                    null
+            ));
+        } catch (Exception ex) {
+            log.error("Failed to save Firebase token", ex);
+            throw new ServerErrorException("Failed to save Firebase token");
+        }
+    }
+
 }

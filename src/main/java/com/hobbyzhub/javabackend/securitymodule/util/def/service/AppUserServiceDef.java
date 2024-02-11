@@ -20,4 +20,6 @@ public interface AppUserServiceDef {
     void resetPassword(AppUser userCredential);
     List<AppUser> searchUsersByName(String searchSlug, Integer page, Integer size);
     AppUser findUserByEmail(String email);
+    void saveFirebaseToken(String userId, String firebaseToken);
+    void deleteFirebaseToken(String userId);
 }
