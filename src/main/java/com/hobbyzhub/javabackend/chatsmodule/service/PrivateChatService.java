@@ -23,14 +23,14 @@ public class PrivateChatService {
 
     public PrivateChat createNewChat(PrivateChat newPrivateChat) {
         PrivateChat existingPrivateChat =
-            privateChatRepository.findFirstByParticipantAOrParticipantB(
+            privateChatRepository.findFirstByParticipantAAndParticipantB(
                 newPrivateChat.getParticipantA(),
                 newPrivateChat.getParticipantB()
             );
 
         if(Objects.isNull(existingPrivateChat)) {
             existingPrivateChat =
-                privateChatRepository.findFirstByParticipantAOrParticipantB(
+                privateChatRepository.findFirstByParticipantAAndParticipantB(
                     newPrivateChat.getParticipantB(),
                     newPrivateChat.getParticipantA()
                 );

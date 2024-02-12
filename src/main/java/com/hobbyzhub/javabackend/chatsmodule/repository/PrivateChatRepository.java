@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface PrivateChatRepository extends MongoRepository<PrivateChat, String> {
     Page<PrivateChat> findByChatParticipantsContains(String participantId, Pageable pageable);
-    PrivateChat findFirstByParticipantAOrParticipantB(String participantA, String participantB);
+    PrivateChat findFirstByParticipantAAndParticipantB(String participantA, String participantB);
 }
