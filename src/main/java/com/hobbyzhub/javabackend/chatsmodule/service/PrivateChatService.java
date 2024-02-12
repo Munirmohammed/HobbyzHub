@@ -25,7 +25,7 @@ public class PrivateChatService {
     MongoTemplate chatModelTemplate;
 
     public PrivateChat createNewChat(String myParticipantId, PrivateChat newPrivateChat) {
-        PrivateChat existingPrivateChat = privateChatRepository.findByParticipantAOrParticipantB(myParticipantId);
+        PrivateChat existingPrivateChat = privateChatRepository.findByParticipantAOrParticipantB(myParticipantId, myParticipantId);
         if(Objects.isNull(existingPrivateChat)) {
             return privateChatRepository.save(newPrivateChat);
         } else {
