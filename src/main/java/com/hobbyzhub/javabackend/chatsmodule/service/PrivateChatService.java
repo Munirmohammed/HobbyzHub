@@ -21,11 +21,21 @@ public class PrivateChatService {
     @Autowired
     private MessageModelService messageModelService;
 
-    @Autowired
-    MongoTemplate chatModelTemplate;
+    public PrivateChat createNewChat(PrivateChat newPrivateChat) {
+        PrivateChat existingPrivateChat =
+            privateChatRepository.findFirstByParticipantAOrParticipantB(
+                newPrivateChat.getParticipantA(),
+                newPrivateChat.getParticipantB()
+            );
 
-    public PrivateChat createNewChat(String myParticipantId, PrivateChat newPrivateChat) {
-        PrivateChat existingPrivateChat = privateChatRepository.findByParticipantAOrParticipantB(myParticipantId, myParticipantId);
+        if(Objects.isNull(existingPrivateChat)) {
+            existingPrivateChat =
+                privateChatRepository.findFirstByParticipantAOrParticipantB(
+                    newPrivateChat.getParticipantB(),
+                    newPrivateChat.getParticipantA()
+                );
+        }
+
         if(Objects.isNull(existingPrivateChat)) {
             return privateChatRepository.save(newPrivateChat);
         } else {
