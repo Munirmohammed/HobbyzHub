@@ -7,7 +7,6 @@ import com.hobbyzhub.javabackend.chatsmodule.payload.response.GroupChatResponse;
 import com.hobbyzhub.javabackend.chatsmodule.service.GroupChatService;
 import com.hobbyzhub.javabackend.chatsmodule.util.ChatModelUtils;
 import com.hobbyzhub.javabackend.sharedpayload.GenericResponse;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

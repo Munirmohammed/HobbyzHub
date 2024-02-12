@@ -24,8 +24,8 @@ public class PrivateChatService {
     @Autowired
     MongoTemplate chatModelTemplate;
 
-    public PrivateChat createNewChat(PrivateChat newPrivateChat) {
-        PrivateChat existingPrivateChat = privateChatRepository.findByChatParticipantsIsContainingAllIgnoreCase(newPrivateChat.getChatParticipants());
+    public PrivateChat createNewChat(String myParticipantId, PrivateChat newPrivateChat) {
+        PrivateChat existingPrivateChat = privateChatRepository.findByParticipantAOrParticipantB(myParticipantId);
         if(Objects.isNull(existingPrivateChat)) {
             return privateChatRepository.save(newPrivateChat);
         } else {

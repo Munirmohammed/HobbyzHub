@@ -20,4 +20,7 @@ public class PrivateChat extends GenericChat implements Serializable {
 
     @Id
     private String chatId;
+
+    private String participantA;
+    private String participantB;
 }

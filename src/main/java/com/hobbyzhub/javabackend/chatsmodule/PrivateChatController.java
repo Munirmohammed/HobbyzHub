@@ -43,10 +43,12 @@ public class PrivateChatController {
         PrivateChat newPrivateChat = new PrivateChat();
         newPrivateChat.setChatId(chatId);
         newPrivateChat.setChatType("private");
+        newPrivateChat.setParticipantA(request.getMyUserId());
+        newPrivateChat.setParticipantB(request.getOtherUserId());
         newPrivateChat.setDateTimeCreated(request.getDateTimeCreated());
         newPrivateChat.setChatParticipants(new ArrayList<>(List.of(request.getMyUserId(), request.getOtherUserId())));
         
-        newPrivateChat = privateChatService.createNewChat(newPrivateChat);
+        newPrivateChat = privateChatService.createNewChat(request.getMyUserId(), newPrivateChat);
 
         PrivateChatResponse response = new PrivateChatResponse(
             chatId,
