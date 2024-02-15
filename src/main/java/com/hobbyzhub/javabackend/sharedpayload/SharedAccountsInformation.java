@@ -16,4 +16,5 @@ public class SharedAccountsInformation {
     private boolean categoryStatus;
     private String joinedDate;
     private String birthdate;
+    private String firebaseToken;
 }

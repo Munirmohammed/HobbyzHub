@@ -34,6 +34,7 @@ public class SharedAccounts {
             .fullName(appUser.getFullName())
             .bio(appUser.getBio())
             .profileImage(appUser.getProfileImage())
+            .firebaseToken(appUser.getFirebaseToken())
         .build();
 
         if(!Objects.isNull(appUser.getGender())) {

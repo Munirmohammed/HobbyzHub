@@ -20,30 +20,30 @@ public class FcmService {
     @Value("${application.organization.name}")
     private String organizationName;
 
-    public String sendNotificationToSpecificDevice(MessageDTO note, String token) throws FirebaseMessagingException {
+    public String sendNotificationToSpecificDevice(MessageDTO messageDTO, String token) throws FirebaseMessagingException {
         Notification notification = Notification.builder()
-                .setTitle(note.getSubject())
-                .setBody(note.getContent())
-                .setImage(note.getImage())
+                .setTitle(messageDTO.getSubject())
+                .setBody(messageDTO.getContent())
+                .setImage(messageDTO.getImage())
                 .build();
         Message message = Message.builder()
-                .setToken(token)
+                .setToken(token) // Updated to use token from MessageDTO
                 .setNotification(notification)
-                .putAllData(note.getData())
+                .putAllData(messageDTO.getData())
                 .build();
         return firebaseMessaging.send(message);
     }
 
-    public BatchResponse sendNotificationToMultipleDevices(MessageDTO note, List<String> tokens) throws FirebaseMessagingException {
+    public BatchResponse sendNotificationToMultipleDevices(MessageDTO messageDTO, List<String> tokens) throws FirebaseMessagingException {
         Notification notification = Notification.builder()
-                .setTitle(note.getSubject())
-                .setBody(note.getContent())
-                .setImage(note.getImage())
+                .setTitle(messageDTO.getSubject())
+                .setBody(messageDTO.getContent())
+                .setImage(messageDTO.getImage())
                 .build();
         MulticastMessage message = MulticastMessage.builder()
                 .addAllTokens(tokens)
                 .setNotification(notification)
-                .putAllData(note.getData())
+                .putAllData(messageDTO.getData())
                 .build();
         return firebaseMessaging.sendMulticast(message);
     }
@@ -56,16 +56,16 @@ public class FcmService {
         firebaseMessaging.unsubscribeFromTopic(tokens, topic);
     }
 
-    public String sendNotificationToTopic(MessageDTO note, String topic) throws FirebaseMessagingException {
+    public String sendNotificationToTopic(MessageDTO messageDTO, String topic) throws FirebaseMessagingException {
         Notification notification = Notification.builder()
-                .setTitle(note.getSubject())
-                .setBody(note.getContent())
-                .setImage(note.getImage())
+                .setTitle(messageDTO.getSubject())
+                .setBody(messageDTO.getContent())
+                .setImage(messageDTO.getImage())
                 .build();
         Message message = Message.builder()
                 .setTopic(topic)
                 .setNotification(notification)
-                .putAllData(note.getData())
+                .putAllData(messageDTO.getData())
                 .build();
         return firebaseMessaging.send(message);
     }
