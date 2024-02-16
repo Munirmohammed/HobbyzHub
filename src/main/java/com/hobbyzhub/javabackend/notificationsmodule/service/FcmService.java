@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FcmService {
@@ -26,13 +27,18 @@ public class FcmService {
                 .setBody(messageDTO.getContent())
                 .setImage(messageDTO.getImage())
                 .build();
+        Map<String, String> data = messageDTO.getData();
+        if (data == null) {
+            throw new IllegalArgumentException("Data in MessageDTO cannot be null");
+        }
         Message message = Message.builder()
-                .setToken(token) // Updated to use token from MessageDTO
+                .setToken(token)
                 .setNotification(notification)
-                .putAllData(messageDTO.getData())
+                .putAllData(data)
                 .build();
         return firebaseMessaging.send(message);
     }
+
 
     public BatchResponse sendNotificationToMultipleDevices(MessageDTO messageDTO, List<String> tokens) throws FirebaseMessagingException {
         Notification notification = Notification.builder()
