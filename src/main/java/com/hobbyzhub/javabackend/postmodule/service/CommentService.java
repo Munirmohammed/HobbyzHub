@@ -65,21 +65,25 @@ public class CommentService {
         comment = commentRepository.save(comment);
 
         // Send notification to the post creator
-        sendCommentNotification(post);
-        log.info(String.valueOf(post));
+        sendCommentNotification(post, comment);
+        log.info(String.valueOf(comment));
 
         return comment;
     }
 
-    private void sendCommentNotification(Post post) {
+    private void sendCommentNotification(Post post, Comment comment) {
         String postCreatorUserId = post.getUserId();
         SharedAccountsInformation sharedInfo = accountManagement.retrieveSharedAccount(postCreatorUserId);
         String firebaseToken = sharedInfo.getFirebaseToken();
-        log.info(firebaseToken);
 
         if (firebaseToken != null) {
             try {
-                MessageDTO notificationMessage = getMessageDTO(firebaseToken);
+                MessageDTO notificationMessage = getMessageDTO(firebaseToken, comment);
+
+                // Initialize the data field if not already initialized
+                if (notificationMessage.getData() == null) {
+                    notificationMessage.setData(new HashMap<>());
+                }
 
                 // Send the notification
                 fcmService.sendNotificationToSpecificDevice(notificationMessage, firebaseToken);
@@ -94,11 +98,16 @@ public class CommentService {
         }
     }
 
-    private static MessageDTO getMessageDTO(String firebaseToken) {
+
+
+    private static MessageDTO getMessageDTO(String firebaseToken, Comment comment) {
+        // Prepare the notification message with comment data
+        HashMap<String, String> commentData = getStringStringHashMap(comment);
+
         MessageDTO notificationMessage = new MessageDTO(
-                "New Comment on Your Post",
-                "Someone commented on your post",
-                null,
+                "Somemone Commented on Your Post",
+                comment.getMessage(),
+                commentData,
                 null,
                 firebaseToken
         );
@@ -107,6 +116,18 @@ public class CommentService {
             notificationMessage.setData(new HashMap<>());
         }
         return notificationMessage;
+    }
+
+
+    private static HashMap<String, String> getStringStringHashMap(Comment comment) {
+        HashMap<String, String> commentData = new HashMap<>();
+        commentData.put("commentId", comment.getCommentId());
+        commentData.put("postId", comment.getPostComment().getPostId());
+        commentData.put("message", comment.getMessage());
+        commentData.put("username", comment.getUsername());
+        commentData.put("profileImage", comment.getProfileImage());
+        commentData.put("commentTime", comment.getCommentTime().toString());
+        return commentData;
     }
 
 
