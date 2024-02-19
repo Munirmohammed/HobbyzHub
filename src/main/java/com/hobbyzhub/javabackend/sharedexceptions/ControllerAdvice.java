@@ -16,17 +16,17 @@ public class ControllerAdvice {
     @Value("${application.organization.name}")
     private String organizationName;
 
-    @ExceptionHandler(value = ServerErrorException.class)
-    public ResponseEntity<?> handleServerErrorException(ServerErrorException ex, WebRequest req) {
-        return ResponseEntity.internalServerError().body(new GenericResponse<>(
-            apiVersion,
-            organizationName,
-            ex.getMessage(),
-            false,
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            null
-        ));
-    }
+//    @ExceptionHandler(value = ServerErrorException.class)
+//    public ResponseEntity<?> handleServerErrorException(ServerErrorException ex, WebRequest req) {
+//        return ResponseEntity.internalServerError().body(new GenericResponse<>(
+//            apiVersion,
+//            organizationName,
+//            ex.getMessage(),
+//            false,
+//            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//            null
+//        ));
+//    }
 
 //    @ExceptionHandler(value = Exception.class)
 //    public ResponseEntity<?> handleGeneralException(Exception ex, WebRequest re) {
