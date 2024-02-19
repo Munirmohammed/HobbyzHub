@@ -32,10 +32,12 @@ public class LikeService {
                 .substring(0, 12);
     }
     @Modifying
-    public Like createLike(String postId) {
+    public Like createLike(String postId,String likerUserId) {
         Post post = postRepository.findById(postId).get();
         Like like = null;
-        if(post.getPostId().equalsIgnoreCase(postId)){
+        String userIdOfPost = post.getUserId();
+        String userIdOfLiker;
+        if(post.getPostId().equalsIgnoreCase(postId) && likerUserId!=null){
             like = Like.builder()
                     .likeId(setId())
                     .likeCount(counter++)
@@ -43,7 +45,7 @@ public class LikeService {
                     .profileImage(post.getProfileImage())
                     .username(post.getUsername())
                     .likeTime(LocalDateTime.now())
-                    .userId(post.getUserId())
+                    .userId(likerUserId)
                     .build();
             log.info("successfully placed a like...");
               like = likeRepository.save(like);

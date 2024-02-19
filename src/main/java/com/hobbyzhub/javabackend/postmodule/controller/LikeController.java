@@ -24,8 +24,9 @@ public class LikeController {
     @Value("${application.organization.name}")
     private String organizationName;
     @PostMapping("/create")
-    public ResponseEntity<?> createLike(@RequestParam String postId){
-        Like like = likeService.createLike(postId);
+    public ResponseEntity<?> createLike(@RequestParam String postId,
+                                        @RequestParam("likerUserId") String likerUserId){
+        Like like = likeService.createLike(postId,likerUserId);
         if(like!=null){
             return new ResponseEntity<>(
                     new PostGenericResponse<>(
