@@ -1,5 +1,6 @@
 package com.hobbyzhub.javabackend.followersmodule.service.Impl;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.hobbyzhub.javabackend.followersmodule.entity.UserRelationship;
 import com.hobbyzhub.javabackend.followersmodule.payload.request.UserRelationshipRequest;
 import com.hobbyzhub.javabackend.followersmodule.payload.response.GenericServiceResponse;
@@ -7,7 +8,10 @@ import com.hobbyzhub.javabackend.followersmodule.payload.response.UserFollowerRe
 import com.hobbyzhub.javabackend.followersmodule.payload.response.UserPreviewResponse;
 import com.hobbyzhub.javabackend.followersmodule.repository.UserRelationshipRepository;
 import com.hobbyzhub.javabackend.followersmodule.service.UserRelationshipService;
+import com.hobbyzhub.javabackend.notificationsmodule.dto.MessageDTO;
+import com.hobbyzhub.javabackend.notificationsmodule.service.FcmService;
 import com.hobbyzhub.javabackend.securitymodule.SharedAccounts;
+import com.hobbyzhub.javabackend.sharedpayload.SharedAccountsInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +24,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +44,12 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
 
     @Autowired
     private SharedAccounts accountManagementServiceFeign;
+
+    @Autowired
+    private FcmService fcmService;
+
+//    @Autowired
+//    private NotificationQueueService notificationQueueService;
 
     @Value("${application.api.version}")
     private String apiVersion;
@@ -105,7 +117,38 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
 
             userRelationshipRepository.save(newRelationship);
 
-            UserPreviewResponse userPreview = accountManagementServiceFeign.getData(otherUserId);
+            SharedAccountsInformation sharedInfo = accountManagementServiceFeign.retrieveSharedAccount(otherUserId);
+            UserPreviewResponse userPreview = convertToUserPreviewResponse(sharedInfo);
+
+            // Sending notification to the user being followed
+            try {
+                Map<String, String> data = new HashMap<>();
+                data.put("followerId", userRelationshipRequest.getMyUserId()); // Assuming this is the key for the follower ID
+                MessageDTO notificationMessage = new MessageDTO("You have a new follower",
+                        "You have been followed by " + userPreview.getFullName(), data, "", userPreview.getFirebaseToken());
+                System.out.println(notificationMessage);
+                System.out.println(userPreview.getFirebaseToken());
+
+                // Check if the Firebase token is not null before sending the notification
+                if (userPreview.getFirebaseToken() != null) {
+                    // Send the notification if the token is available
+                    fcmService.sendNotificationToSpecificDevice(notificationMessage, userPreview.getFirebaseToken());
+                    System.out.println(notificationMessage);
+                    System.out.println(userPreview.getFirebaseToken());
+                } else {
+                    // If the Firebase token is null, log a message or handle it as needed
+                    logger.warn("Firebase token is null for user: {}", userPreview.getUserId());
+                    // notificationQueueService.queueNotification(new Notification(userPreview.getUserId(), notificationMessage));
+                }
+            } catch (FirebaseMessagingException e) {
+                logger.error("Error sending notification to user: {}", userPreview.getUserId(), e);
+
+            }
+
+
+
+
+
 
             return new GenericServiceResponse<>(
                     apiVersion,
@@ -116,6 +159,16 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
                     userPreview);
         }
     }
+
+    private UserPreviewResponse convertToUserPreviewResponse(SharedAccountsInformation sharedInfo) {
+        UserPreviewResponse userResponse = new UserPreviewResponse();
+        userResponse.setUserId(sharedInfo.getUserId());
+        userResponse.setFullName(sharedInfo.getFullName());
+        userResponse.setProfileImage(sharedInfo.getProfileImage());
+        userResponse.setFirebaseToken(sharedInfo.getFirebaseToken());
+        return userResponse;
+    }
+
 
     @Cacheable(key = "#userRelationshipRequest.myUserId + '_' + #userRelationshipRequest.otherUserId")
     @Override

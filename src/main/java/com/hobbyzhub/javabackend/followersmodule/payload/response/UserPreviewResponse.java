@@ -20,4 +20,5 @@ public class UserPreviewResponse implements Serializable {
     private String userId;
     private String fullName;
     private String profileImage;
+    private String firebaseToken;
 }

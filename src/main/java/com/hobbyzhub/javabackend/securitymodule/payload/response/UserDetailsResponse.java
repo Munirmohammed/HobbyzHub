@@ -16,6 +16,7 @@ public class UserDetailsResponse {
     private String profileImage;
     private String joinedDate;
     private String birthdate;
+    private String firebaseToken;
 
     public UserDetailsResponse(Object o) {
     }

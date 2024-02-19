@@ -25,9 +25,8 @@ public class FcmController {
 
     @PostMapping(value = "/single-notification")
     public ResponseEntity<GenericServiceResponse<String>> sendToSpecificDevice(
-            @RequestBody MessageDTO note,
-            @RequestParam String token) throws FirebaseMessagingException {
-        String response = fcmService.sendNotificationToSpecificDevice(note, token);
+            @RequestBody MessageDTO messageDTO) throws FirebaseMessagingException {
+        String response = fcmService.sendNotificationToSpecificDevice(messageDTO, messageDTO.getFirebaseToken());
 
         GenericServiceResponse<String> genericResponse = new GenericServiceResponse<>(
                 apiVersion,
