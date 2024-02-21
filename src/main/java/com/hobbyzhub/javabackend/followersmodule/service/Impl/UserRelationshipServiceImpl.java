@@ -16,9 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -34,7 +31,6 @@ import java.util.stream.Collectors;
  */
 
 @Service
-@CacheConfig(cacheNames = "userRelationshipCache") // Set a default cache name for the class
 public class UserRelationshipServiceImpl implements UserRelationshipService {
 
     private final Logger logger = LoggerFactory.getLogger(UserRelationshipServiceImpl.class);
@@ -57,7 +53,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
     @Value("${application.organization.name}")
     private String organizationName;
 
-    @Cacheable(key = "#userRelationshipRequest.myUserId")
     @Override
     public GenericServiceResponse<List<UserPreviewResponse>> getFollowings(UserRelationshipRequest userRelationshipRequest) {
         String myUserId = userRelationshipRequest.getMyUserId();
@@ -87,7 +82,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
                 followings);
     }
 
-    @Cacheable(key = "#userRelationshipRequest.myUserId + '_' + #userRelationshipRequest.otherUserId")
     @Override
     public GenericServiceResponse<UserPreviewResponse> followUnfollowUser(UserRelationshipRequest userRelationshipRequest) {
         String myUserId = userRelationshipRequest.getMyUserId();
@@ -169,8 +163,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
         return userResponse;
     }
 
-
-    @Cacheable(key = "#userRelationshipRequest.myUserId + '_' + #userRelationshipRequest.otherUserId")
     @Override
     public boolean isFollowing(UserRelationshipRequest userRelationshipRequest) {
         String myUserId = userRelationshipRequest.getMyUserId();
@@ -181,7 +173,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
         return existingRelationship != null && existingRelationship.isFollowing();
     }
 
-    @Cacheable(key = "#userId")
     @Override
     public GenericServiceResponse<Integer> getFollowersCount(String userId) {
         logger.info(userId);
@@ -206,7 +197,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
         }
     }
 
-    @Cacheable(key = "#userId")
     @Override
     public GenericServiceResponse<Integer> getFollowingsCount(String userId) {
         try {
@@ -231,7 +221,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
         }
     }
 
-    @Cacheable(key = "#userRelationshipRequest.otherUserId + '_' + #userRelationshipRequest.myUserId")
     @Override
     public GenericServiceResponse<List<UserFollowerResponse>> getFollowersForUser(UserRelationshipRequest userRelationshipRequest) {
         String otherUserId = userRelationshipRequest.getOtherUserId();
@@ -266,7 +255,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
                 followers);
     }
 
-    @Cacheable(key = "#userRelationshipRequest.myUserId + '_' + #userRelationshipRequest.otherUserId")
     @Override
     public GenericServiceResponse<List<UserFollowerResponse>> getFollowingsForUser(UserRelationshipRequest userRelationshipRequest) {
         String myUserId = userRelationshipRequest.getOtherUserId();
@@ -301,7 +289,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
                 followings);
     }
 
-    @CacheEvict(key = "#userId")
     @Override
     public void deleteAllFollowersAndFollowings(String userId) {
         // Implement the logic to delete all followers and followings for a given user (userId)
@@ -309,7 +296,6 @@ public class UserRelationshipServiceImpl implements UserRelationshipService {
         userRelationshipRepository.deleteAll(relationships);
     }
 
-    @Cacheable(key = "#userRelationshipRequest.otherUserId + '_' + #userRelationshipRequest.myUserId")
     @Override
     public GenericServiceResponse<List<UserFollowerResponse>> getFollowers(UserRelationshipRequest userRelationshipRequest) {
         String myUserId = userRelationshipRequest.getOtherUserId();
