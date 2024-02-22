@@ -159,7 +159,7 @@ public class LikeService {
         Post post = like.getPostLike();
         if(like.getLikeCount()>0 && post!=null){
             like.setLikeCount(like.getLikeCount()-1);
-            likeRepository.save(like);
+            likeRepository.delete(like);
             //also, go head and deduct from post table by 1...
             post.setLikeCount(like.getLikeCount());
             log.info("successfully unliked post: "+like.getPostLike().getPostId());

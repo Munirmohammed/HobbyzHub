@@ -70,7 +70,7 @@ public class LikeController {
                     ,HttpStatus.OK);
         }
     }
-    @GetMapping("/unlike")
+    @DeleteMapping("/unlike")
     public ResponseEntity<?> unlike(@RequestParam("likeId") String likeId){
           Map<String,Boolean> result =likeService.unlike(likeId);
         return new ResponseEntity<>(result,HttpStatus.OK);
