@@ -22,4 +22,5 @@ public interface AppUserServiceDef {
     AppUser findUserByEmail(String email);
     void saveFirebaseToken(String userId, String firebaseToken);
     void deleteFirebaseToken(String userId);
+    AppUser createAdminAccount(AppUser newAppUser);
 }

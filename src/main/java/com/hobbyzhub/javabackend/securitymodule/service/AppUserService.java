@@ -4,6 +4,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.hobbyzhub.javabackend.mailingmodule.InjectableAccountsMailingComponent;
 import com.hobbyzhub.javabackend.securitymodule.entity.AppUser;
+import com.hobbyzhub.javabackend.securitymodule.entity.UserRoles;
 import com.hobbyzhub.javabackend.securitymodule.repository.AppUserRepository;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.hobbyzhub.javabackend.securitymodule.types.Gender;
@@ -29,10 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -221,11 +219,36 @@ public class AppUserService implements AppUserServiceDef {
         appUser.setNewAccount(true);
         appUser.setAccountActive(false);
         appUser.setJoinedDate(LocalDate.now());
-
+        appUser.setRoles(Collections.singleton(UserRoles.ROLE_USER));
+        /*
+        * adding default role to user as ROLE_USER
+        * */
         // save in database
         appUser = appUserRepository.save(appUser);
         return appUser;
     }
+
+    @Override
+    public AppUser createAdminAccount(AppUser newAppUser) {
+        if(appUserRepository.existsByEmail(newAppUser.getEmail())) {
+            log.warn("Attempt at registering with existing email");
+            throw new EntityExistsException("Account for that email already exists");
+        }
+        String userId = generateId();
+        newAppUser.setUserId(userId);
+        newAppUser.setPassword(passwordEncoder.encode(newAppUser.getPassword()));
+        newAppUser.setNewAccount(true);
+        newAppUser.setAccountActive(false);
+        newAppUser.setJoinedDate(LocalDate.now());
+        newAppUser.setRoles(Collections.singleton(UserRoles.ROLE_ADMIN));
+        /*
+         * adding default role to user as ROLE_ADMIN
+         * */
+        // save in database
+        newAppUser = appUserRepository.save(newAppUser);
+        return newAppUser;
+    }
+
 
     @Override
     public void markAccountNotNew(String userId) {
@@ -310,6 +333,4 @@ public class AppUserService implements AppUserServiceDef {
         appUser.setFirebaseToken(null);
         appUserRepository.save(appUser);
     }
-
-
 }

@@ -68,6 +68,28 @@ public class AuthenticationController extends EntityModelMapper {
         }
 
     }
+    @PostMapping(value = "/admin/reg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> registerAdmin(@RequestBody OpUserAccountRequest request){
+        try{
+            AppUser newAppUser = super.mapPayloadToEntity(request);
+            AppUser credentials =  appUserService.createAdminAccount(newAppUser);
+            log.info("Successfully created new admin account with id: {}", credentials.getUserId());
+            /*
+            * admin response generation...
+            * */
+            RegisterResponse response = new RegisterResponse(credentials.getEmail(), credentials.getUserId());
+            return ResponseEntity.ok().body(new GenericResponse<>(
+                    apiVersion,
+                    organizationName,
+                    "Successfully registered new user",
+                    true,
+                    HttpStatus.OK.value(),
+                    response
+            ));
+        }catch (EntityExistsException ex){
+            throw new SuccessWithErrorException(ex.getMessage());
+        }
+    }
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loginUser(@RequestBody OpUserAccountRequest request) {
         Authentication authentication

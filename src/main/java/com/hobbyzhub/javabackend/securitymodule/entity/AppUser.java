@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -77,4 +79,10 @@ public class AppUser implements Serializable {
 
     @Column(name = "firebase_token")
     private String firebaseToken;
+
+    @ElementCollection(targetClass = UserRoles.class)
+    @CollectionTable(name="user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<UserRoles> roles;
+
 }

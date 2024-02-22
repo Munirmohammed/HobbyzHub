@@ -18,9 +18,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<AppUser> userCredential = this.loadUserByEmail(email);
+//        return userCredential
+//            .map(UserDetailsImpl::new)
+//            .orElseThrow(()-> new UsernameNotFoundException("Not found user with email " + email));
         return userCredential
-            .map(UserDetailsImpl::new)
-            .orElseThrow(()-> new UsernameNotFoundException("Not found user with email " + email));
+                .map(user-> new UserDetailsImpl(user.getEmail(),user.getPassword(),user.getRoles()))
+                .orElseThrow(()->new UsernameNotFoundException("Not found user with email "+email));
     }
 
     private Optional<AppUser> loadUserByEmail(String email) {
