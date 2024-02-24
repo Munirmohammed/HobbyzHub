@@ -3,6 +3,8 @@ package com.hobbyzhub.javabackend.postmodule.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public final class Like implements Serializable {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name="post_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Post postLike;
 
     @JsonBackReference

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public final class Comment implements Serializable {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name="post_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Post postComment;
     @Column(columnDefinition = "TEXT")
     private String message;
